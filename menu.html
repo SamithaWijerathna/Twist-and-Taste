@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twist & Taste - Menu</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- AOS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+body { background: #f8f9fa; }
+.food-card { border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow:hidden; }
+.food-card img { height: 180px; object-fit: cover; width: 100%; }
+.food-card .card-body { text-align:center; }
+#filters { margin-bottom: 20px; }
+.category-buttons .btn { margin-right: 8px; margin-bottom: 8px; }
+.card-text {
+  display: -webkit-box;        
+  -webkit-box-orient: vertical; 
+  -webkit-line-clamp: 3;       
+  overflow: hidden;
+  
+  display: box;                
+  box-orient: vertical;
+  
+  line-clamp: 3;               
+  text-overflow: ellipsis;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+<div class="container">
+  <a class="navbar-brand fw-bold" href="#">🍔 Twist & Taste</a>
+  <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto" id="navbarLinks">
+      <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link active" href="menu.html">Menu</a></li>
+
+    </ul>
+    <span class="navbar-text ms-3" id="userNameDisplay"></span>
+    <a href="#featured" class="btn btn-danger ms-3">Order Now</a>
+  </div>
+</div>
+</nav>
+
+<!-- Filters Section -->
+<section class="container py-3" id="filters">
+  <div class="mb-3 category-buttons" id="categoryButtons">
+    <!-- Category buttons will be injected here -->
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search foods...">
+    </div>
+    <div class="col-md-6">
+      <select id="sortFilter" class="form-select">
+        <option value="">Sort by Price</option>
+        <option value="asc">Low → High</option>
+        <option value="desc">High → Low</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- Menu Section -->
+<section class="container py-5" data-aos="fade-up">
+  <h3 class="mb-4">Our Menu</h3>
+  <div class="row" id="menuItems"></div>
+</section>
+
+<!-- Extra Options Modal -->
+<div class="modal fade" id="extrasModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+  <h5 class="modal-title">Customize Your Order</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+  <p>Select extras:</p>
+  <div class="form-check">
+    <input class="form-check-input extraOption" type="checkbox" value="Extra Cheese" data-price="200" id="extraCheese">
+    <label class="form-check-label" for="extraCheese">🧀 Extra Cheese (+200)</label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input extraOption" type="checkbox" value="Extra Chicken" data-price="300" id="extraChicken">
+    <label class="form-check-label" for="extraChicken">🍗 Extra Chicken (+300)</label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input extraOption" type="checkbox" value="Mushrooms" data-price="150" id="mushrooms">
+    <label class="form-check-label" for="mushrooms">🍄 Mushrooms (+150)</label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input extraOption" type="checkbox" value="Olives" data-price="100" id="olives">
+    <label class="form-check-label" for="olives">🫒 Olives (+100)</label>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  <button type="button" class="btn btn-warning" id="confirmAddToCart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Food Details Modal -->
+<div class="modal fade" id="foodDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="foodModalTitle">Food Name</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Slideshow -->
+        <div id="foodImagesCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+          <div class="carousel-inner" id="carouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#foodImagesCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#foodImagesCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+        <p id="foodModalDescription"></p>
+        <p class="fw-bold" id="foodModalPrice"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" id="foodModalAddToCart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light text-center py-3 mt-5">
+<p>© 2025 Twist & Taste. All rights reserved.</p>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script> AOS.init(); </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAd899TaOCfg0RhMQjzQ9R5_cwqpXxNduU",
+  authDomain: "twistandtaste.firebaseapp.com",
+  projectId: "twistandtaste",
+  storageBucket: "twistandtaste.appspot.com",
+  messagingSenderId: "88111377756",
+  appId: "1:88111377756:web:067aad85b3e97b44eb6599",
+  measurementId: "G-L190CVJD8J"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Elements
+const menuContainer = document.getElementById("menuItems");
+const extrasModalEl = document.getElementById("extrasModal");
+const extrasModal = new bootstrap.Modal(extrasModalEl);
+const extrasContainer = extrasModalEl.querySelector(".modal-body");
+const confirmAddToCartBtn = document.getElementById("confirmAddToCart");
+const navbarLinks = document.getElementById("navbarLinks");
+const userNameDisplay = document.getElementById("userNameDisplay");
+const categoryButtons = document.getElementById("categoryButtons");
+const sortFilter = document.getElementById("sortFilter");
+const searchInput = document.getElementById("searchInput");
+
+const foodDetailsModal = new bootstrap.Modal(document.getElementById("foodDetailsModal"));
+const foodModalTitle = document.getElementById("foodModalTitle");
+const foodModalDescription = document.getElementById("foodModalDescription");
+const foodModalPrice = document.getElementById("foodModalPrice");
+const carouselInner = document.getElementById("carouselInner");
+const foodModalAddToCart = document.getElementById("foodModalAddToCart");
+
+let selectedFood = null;
+let userId = null;
+let allFoods = [];
+let selectedCategory = localStorage.getItem("selectedCategory") || "";
+let searchText = localStorage.getItem("searchText") || "";
+let sortOption = localStorage.getItem("sortOption") || "";
+
+searchInput.value = searchText;
+sortFilter.value = sortOption;
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userId = user.uid;
+    const userDoc = await getDoc(doc(db, "users", userId));
+    let userName = user.email;
+    if (userDoc.exists() && userDoc.data().name) userName = userDoc.data().name;
+    userNameDisplay.textContent = `Hi, ${userName}`;
+    navbarLinks.innerHTML = `
+      <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link active" href="menu.html">Menu</a></li>
+      <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+     <li class="nav-item">
+  <a id="cartNavBtn" class="nav-link position-relative disabled" href="cart.html">
+    <i class="fas fa-shopping-cart"></i> Cart
+    <span id="cartCount" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">0</span>
+  </a>
+</li>
+
+     
+    `;
+  } else {
+    userId = null;
+    userNameDisplay.textContent = "";
+    navbarLinks.innerHTML = `
+      <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link active" href="menu.html">Menu</a></li>
+      <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+      <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+
+    `;
+  }
+
+  // ✅ Always load categories & foods (not gated by login)
+  await loadCategories();
+  await loadFoods();
+});
+
+
+/**
+ * Update cart count in the navbar
+ */
+export async function updateCartCount() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const cartSnap = await getDocs(collection(db, "carts", user.uid, "items"));
+  const count = cartSnap.size;
+
+  const cartCountEl = document.getElementById("cartCount");
+  const cartNavBtn = document.getElementById("cartNavBtn");
+
+  if (cartCountEl) cartCountEl.innerText = count;
+
+  if (cartNavBtn) {
+    if (count === 0) {
+      cartNavBtn.classList.add("disabled");
+    } else {
+      cartNavBtn.classList.remove("disabled");
+    }
+  }
+}
+
+// Auto update after login
+onAuthStateChanged(auth, (user) => {
+  if (user) updateCartCount();
+});
+
+
+
+// Load categories
+async function loadCategories() {
+  const catSnap = await getDocs(collection(db, "categories"));
+  categoryButtons.innerHTML = `<button class="btn btn-outline-primary ${selectedCategory===""?"active":""}" data-id="">All</button>`;
+  catSnap.forEach(docSnap => {
+    categoryButtons.innerHTML += `<button class="btn btn-outline-primary ${selectedCategory===docSnap.data().name?"active":""}" data-id="${docSnap.data().name}">${docSnap.data().name}</button>`;
+  });
+
+  document.querySelectorAll("#categoryButtons button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedCategory = btn.dataset.id;
+      localStorage.setItem("selectedCategory", selectedCategory);
+      document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      displayFoods();
+    });
+  });
+}
+
+// Load foods
+async function loadFoods() {
+  const foodSnap = await getDocs(collection(db, "foods"));
+  allFoods = foodSnap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+  displayFoods();
+}
+
+// Display foods
+function displayFoods() {
+  let filtered = allFoods.filter(f => {
+    const matchCat = selectedCategory ? f.category === selectedCategory : true;
+    const matchSearch = f.name.toLowerCase().includes(searchInput.value.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  if (sortFilter.value === "asc") filtered.sort((a, b) => a.price - b.price);
+  if (sortFilter.value === "desc") filtered.sort((a, b) => b.price - a.price);
+
+  menuContainer.innerHTML = "";
+  filtered.forEach(f => {
+    const col = document.createElement("div");
+    col.className = "col-md-4 mb-4";
+    col.innerHTML = `
+      <div class="card food-card">
+        <img src="${f.imageUrl}" alt="${f.name}">
+        <div class="card-body">
+          <h5 class="card-title">${f.name}</h5>
+          <p class="card-text">${f.description || ""}</p>
+          <p class="fw-bold">Rs.${f.price}</p>
+          <div class="d-flex justify-content-center gap-2">
+            <button class="btn btn-warning addToCartBtn" data-id="${f.id}">
+              <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+            <button class="btn btn-info text-white seeMoreBtn" data-id="${f.id}">
+              <i class="fas fa-eye"></i> See More
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    menuContainer.appendChild(col);
+  });
+  attachAddToCartEvents();
+  attachSeeMoreEvents();
+}
+
+// Search and sort persistence
+searchInput.addEventListener("input", () => {
+  localStorage.setItem("searchText", searchInput.value);
+  displayFoods();
+});
+sortFilter.addEventListener("change", () => {
+  localStorage.setItem("sortOption", sortFilter.value);
+  displayFoods();
+});
+
+// Populate extras modal dynamically
+function showExtrasModal(food) {
+  selectedFood = food;
+  extrasContainer.innerHTML = "";
+  if (food.extras && food.extras.length > 0) {
+    food.extras.forEach((ex, i) => {
+      const div = document.createElement("div");
+      div.className = "form-check";
+      div.innerHTML = `
+        <input class="form-check-input extraOption" type="checkbox" value="${ex.name}" data-price="${ex.price}" id="extra_${i}">
+        <label class="form-check-label" for="extra_${i}">${ex.name} (+${ex.price})</label>
+      `;
+      extrasContainer.appendChild(div);
+    });
+  } else {
+    extrasContainer.innerHTML = "<p>No extras available for this food.</p>";
+  }
+  extrasModal.show();
+}
+
+function attachAddToCartEvents() {
+  document.querySelectorAll(".addToCartBtn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if (!userId) {
+        window.location.href = `login.html?redirect=menu.html`;
+        return;
+      }
+
+      const food = allFoods.find(f => f.id === btn.dataset.id);
+      if (!food) return;
+
+      // Show extras modal
+      showExtrasModal(food);
+
+      try {
+        // Increment cartCount in Firestore
+        const foodRef = doc(db, "foods", food.id);
+        await updateDoc(foodRef, { cartCount: increment(1) });
+        console.log(`Cart count updated for ${food.name}`);
+      } catch (error) {
+        console.error("Error updating cart count:", error);
+      }
+    });
+  });
+}
+
+// See More modal
+function attachSeeMoreEvents() {
+  document.querySelectorAll(".seeMoreBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const food = allFoods.find(f => f.id === btn.dataset.id);
+      if (!food) return;
+      selectedFood = food;
+
+      foodModalTitle.textContent = food.name;
+      foodModalDescription.textContent = food.description || "";
+      foodModalPrice.textContent = `Rs.${food.price}`;
+
+      // Carousel images
+      carouselInner.innerHTML = "";
+      const images = food.imageUrls || [food.imageUrl];
+      images.forEach((img, idx) => {
+        const div = document.createElement("div");
+        div.className = "carousel-item" + (idx === 0 ? " active" : "");
+        div.innerHTML = `<img src="${img}" class="d-block w-100" style="height:400px; object-fit:cover;">`;
+        carouselInner.appendChild(div);
+      });
+
+      const carouselEl = document.getElementById("foodImagesCarousel");
+      const carousel = bootstrap.Carousel.getInstance(carouselEl);
+      if (carousel) carousel.dispose();
+      new bootstrap.Carousel(carouselEl, { interval: 3000 });
+
+      foodDetailsModal.show();
+    });
+  });
+}
+
+
+foodModalAddToCart.addEventListener("click", () => {
+  if (!selectedFood) return;
+  if (!userId) {
+    window.location.href = `login.html?redirect=menu.html`;
+    return;
+  }
+  showExtrasModal(selectedFood);
+  foodDetailsModal.hide();
+});
+
+
+confirmAddToCartBtn.addEventListener("click", async () => {
+  if (!selectedFood) return;
+  if (!userId) {
+    window.location.href = `login.html?redirect=menu.html`;
+    return;
+  }
+
+  let extras = [];
+  let extrasCost = 0;
+  extrasContainer.querySelectorAll(".extraOption:checked").forEach(opt => {
+    extras.push(opt.value);
+    extrasCost += parseInt(opt.dataset.price);
+  });
+
+  const cartItemRef = doc(db, "carts", userId, "items", selectedFood.id);
+  const existing = await getDoc(cartItemRef);
+
+  if (existing.exists()) {
+    const qty = existing.data().quantity || 1;
+    await setDoc(cartItemRef, { ...existing.data(), extras, extrasCost, quantity: qty + 1 }, { merge: true });
+  } else {
+    await setDoc(cartItemRef, {
+      name: selectedFood.name,
+      price: selectedFood.price,
+      imageUrl: selectedFood.imageUrl,
+      extras,
+      extrasCost,
+      quantity: 1
+    });
+  }
+
+  extrasModal.hide();
+  alert(`${selectedFood.name} added to cart with extras!`);
+});
+
+</script>
+
+<iframe src="footer.html" style="width:100%; border:none; height:300px;"></iframe>
+<script type="module" src="cart-utils.js"></script>
+ 
+
+</body>
+</html>

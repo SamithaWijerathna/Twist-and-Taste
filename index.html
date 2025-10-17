@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twist & Taste - Food Ordering</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- AOS Animations -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("UUY2Fyfe5X_gMB40Z"); // replace with your EmailJS user ID
+</script>
+
+
+<style>
+body { font-family: 'Poppins', sans-serif; margin:0; }
+
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: white;
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.hero-content { z-index: 2; position: relative; }
+.hero::after { z-index: 1; content: ''; position: absolute; top:0; left:0; right:0; bottom:0 }
+
+
+
+
+/* Featured Menu */
+.featured {
+  padding: 5rem 0;
+  background: #fff5f5;
+}
+.featured h2 { font-weight: 700; margin-bottom: 3rem; text-align:center; }
+.menu-card {
+  background:white;
+  border-radius:15px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+  overflow:hidden;
+  transition: transform 0.3s;
+}
+.menu-card:hover { transform: scale(1.05); }
+.menu-card img { width:100%; height:200px; object-fit:cover; }
+.menu-card-body { padding:1.5rem; text-align:center; }
+
+/* How it Works */
+.steps {
+  padding:5rem 0;
+  background:#ffe5e5;
+  text-align:center;
+}
+.step i {
+  font-size:3rem;
+  color:#dc3545;
+  margin-bottom:1rem;
+}
+.step h5 { font-weight:600; }
+
+/* Reviews Section */
+.reviews {
+  padding:5rem 0;
+  background:#fff5f5;
+}
+.review-card {
+  background:white;
+  padding:2rem;
+  border-radius:15px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+  text-align:center;
+  transition: transform 0.3s;
+}
+.review-card:hover { transform: scale(1.05); }
+
+/* Contact Section */
+.contact {
+  padding:5rem 0;
+  background:#ffe5e5;
+}
+.contact input, .contact textarea { border-radius:10px; }
+
+/* Footer */
+footer {
+  background:#212529;
+  color:#fff;
+  padding:2rem 0;
+  text-align:center;
+}
+footer a { color:#fff; margin:0 0.5rem; }
+
+/* User Dropdown Hover Style */
+.dropdown-item.text-danger:hover {
+  background-color: #f8d7da;
+  color: #dc3545 !important;
+}
+.reviews {
+  background-color: #000000; /* Red background */
+  color: #fff;
+}
+
+.review-card {
+  background: #0a5e11;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.review-card:hover {
+  background-color: #000;  /* Turn black on hover */
+  color: #fff;
+  transform: translateY(-10px);
+  box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+}
+
+.review-card::before {
+  content: "“";
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: -10px;
+  left: 20px;
+}
+
+.review-card p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.review-card h6 {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: #dc3545; /* Red text for avatar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.contact {
+  background: #0f0f0f; /* red background */
+  color: #fff;
+}
+
+.contact-info {
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.contact-info:hover {
+  transform: translateY(-10px);
+  background-color: #cdc9c9;
+  color: #fff;
+}
+
+.contact-info i {
+  transition: color 0.3s;
+}
+
+.contact-info:hover i {
+  color: #f0e517;
+}
+
+.step-card:hover .step-content {
+  transform: translateY(-15px) scale(1.05);
+  background: linear-gradient(135deg, #bcbdbb, #a4a3a3);
+  box-shadow: 0 15px 30px rgba(5, 5, 5, 0.5);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+/* Floating Icon Animation */
+.step-icon {
+  color: #07ca14;
+  animation: float 2s ease-in-out infinite;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.step-card:hover .step-icon {
+  color: #fff;
+  transform: scale(1.2) rotate(10deg);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Headings & Text */
+.steps h2 {
+  text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.7);
+}
+.steps h5 {
+  margin-top: 15px;
+}
+.steps p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+/* Shadow for cards */
+.step-content {
+  background: #1e1e1e;
+  transition: all 0.3s ease-in-out;
+}
+#chatbotBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #dc3545;
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#chatbotWindow {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.chatbot-header {
+  background: #dc3545;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbot-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.chatbot-footer {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+#chatbotInput {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  outline: none;
+}
+
+#sendMessage {
+  border: none;
+  background: #dc3545;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Chat container */
+#chatContainer {
+  width: 350px;
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Chat window */
+#chatWindow {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #f0f0f0;
+}
+
+/* Input area */
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+.chat-input input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+}
+.chat-input button {
+  background: #16a085;
+  color: #fff;
+  border: none;
+  padding: 0 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+.chat-input button:hover {
+  background: #138d75;
+}
+
+/* Bubbles */
+.user-msg, .bot-msg {
+  max-width: 75%;
+  padding: 10px 14px;
+  margin: 8px 0;
+  border-radius: 18px;
+  word-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* User messages (right side, green) */
+.user-msg {
+  background: #16a085;
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+/* Bot messages (left side, gray) */
+.bot-msg {
+  background: #e0e0e0;
+  color: #333;
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
+
+
+
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">🍔 Twist & Taste</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+    <li class="nav-item">
+  <a id="cartNavBtn" class="nav-link position-relative disabled" href="cart.html">
+    <i class="fas fa-shopping-cart"></i> Cart
+    <span id="cartCount" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">0</span>
+  </a>
+</li>
+        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+      <a href="#featured" class="btn btn-danger ms-3">Order Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline>
+  <source src="video/1.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+  <div class="hero-content" data-aos="fade-up">
+    <h1>Delicious Food, Delivered Fast</h1>
+    <p>Order your favorite meals online and enjoy fresh taste at home</p>
+    <a href="#featured" class="btn btn-warning">Start Ordering</a>
+  </div>
+</section>
+
+
+<!-- Featured Menu -->
+<section class="featured" id="featured">
+  <div class="container">
+    <h2 data-aos="fade-up">Popular Dishes</h2>
+    <div class="row g-4" id="popularDishes"></div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="steps" id="steps" style="background: #121212; color:#fff; padding:5rem 0;">
+  <div class="container">
+    <h2 class="text-center mb-5" data-aos="fade-up" style="font-weight:700; color:#fefefe;">How It Works</h2>
+    <div class="row g-4">
+      <div class="col-md-4 step-card" data-aos="fade-up">
+        <div class="step-content text-center p-4 rounded-4 shadow-lg">
+          <i class="fas fa-utensils fa-3x mb-3 step-icon"></i>
+          <h5 class="fw-bold">Choose Your Meal</h5>
+          <p>Browse our menu of delicious dishes</p>
+        </div>
+      </div>
+      <div class="col-md-4 step-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="step-content text-center p-4 rounded-4 shadow-lg">
+          <i class="fas fa-shopping-cart fa-3x mb-3 step-icon"></i>
+          <h5 class="fw-bold">Place Your Order</h5>
+          <p>Quick checkout with secure payment</p>
+        </div>
+      </div>
+      <div class="col-md-4 step-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="step-content text-center p-4 rounded-4 shadow-lg">
+          <i class="fas fa-motorcycle fa-3x mb-3 step-icon"></i>
+          <h5 class="fw-bold">Enjoy Fast Delivery</h5>
+          <p>Hot and fresh meals delivered to you</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews -->
+<section class="reviews py-5" id="reviews">
+  <div class="container">
+    <h2 class="text-center mb-5 text-white" data-aos="fade-up">What Our Customers Say</h2>
+    <div class="row g-4" id="reviewsContainer">
+      <!-- Review cards will be dynamically injected here -->
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Contact -->
+<section class="contact py-5" id="contact">
+  <div class="container" data-aos="fade-up">
+    <h2 class="text-center mb-5 text-white">Get in Touch</h2>
+    <div class="row g-4">
+      
+      <!-- Contact Info -->
+      <div class="col-md-4">
+        <div class="contact-info p-4 rounded shadow-sm text-center bg-dark" data-aos="fade-right">
+          <i class="fas fa-map-marker-alt fa-2x mb-3 text-danger"></i>
+          <h5 class="text-white">Location</h5>
+          <p class="text-white">123 Twist & Taste St, Colombo, Sri Lanka</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="contact-info p-4 rounded shadow-sm text-center bg-dark" data-aos="fade-up">
+          <i class="fas fa-envelope fa-2x mb-3 text-danger"></i>
+          <h5 class="text-white">Email</h5>
+          <p class="text-white">twistandtaste4@gmail.com</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="contact-info p-4 rounded shadow-sm text-center bg-dark" data-aos="fade-left">
+          <i class="fas fa-phone fa-2x mb-3 text-danger"></i>
+          <h5 class="text-white">Phone</h5>
+          <p class="text-white">+94 77 123 4567</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row mt-5 justify-content-center">
+      <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+        <form id="contactForm" class="bg-dark p-4 rounded shadow">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-group position-relative">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" class="form-control" placeholder="Your Name" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group position-relative">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" class="form-control" placeholder="Your Email" required>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group position-relative">
+                <i class="fas fa-comment input-icon"></i>
+                <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
+              </div>
+            </div>
+            <div class="col-12 text-center">
+              <button type="submit" class="btn btn-danger px-5 py-2">Send Message</button>
+            </div>
+          </div>
+        </form>
+        <div id="formMessage" class="mt-3 text-center"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Floating Chatbot Button -->
+<div id="chatbotBtn">
+  <i class="fas fa-comment-dots"></i>
+</div>
+
+<!-- Chatbot Window -->
+<div id="chatbotWindow" class="d-none">
+  <div class="chatbot-header">
+    <h6>🍔 Twist & Taste Bot</h6>
+    <button id="closeChatbot">&times;</button>
+  </div>
+  <div class="chatbot-body" id="chatbotMessages"></div>
+  <div class="chatbot-footer">
+    <input type="text" id="chatbotInput" placeholder="Ask me something...">
+    <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+<!-- Footer End -->
+
+<!-- Styles for hover animation -->
+<style>
+  .hover-underline:hover {
+    text-decoration: underline;
+    transition: 0.3s;
+  }
+  footer a.btn-outline-light:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    transition: 0.3s;
+  }
+.menu-card-body p {
+  display: -webkit-box;        /* required for line clamping */
+  display: box;                /* fallback for older browsers */
+  -webkit-box-orient: vertical; /* required for line clamping */
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  line-height: 1.5em;          /* ensure consistent height */
+  max-height: 4.5em;           /* 1.5em * 3 lines */
+}
+
+
+</style>
+
+<!-- Required FontAwesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
+<!-- Firebase + Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, query, orderBy, limit, getDocs, getDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd899TaOCfg0RhMQjzQ9R5_cwqpXxNduU",
+    authDomain: "twistandtaste.firebaseapp.com",
+    projectId: "twistandtaste",
+    storageBucket: "twistandtaste.firebasestorage.app",
+    messagingSenderId: "88111377756",
+    appId: "1:88111377756:web:067aad85b3e97b44eb6599",
+    measurementId: "G-L190CVJD8J"
+  };
+
+  const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);   // declare db early
+const auth = getAuth(app);
+
+const navLinks = document.querySelector(".navbar-nav");
+const reviewsContainer = document.getElementById("reviewsContainer");
+const contactForm = document.getElementById("contactForm");
+const formMessage = document.getElementById("formMessage");
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    navLinks.querySelectorAll('a[href="login.html"], a[href="signup.html"]').forEach(el => el.remove());
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));  // ✅ now db is ready
+    let displayName = "User";
+    if (userDoc.exists()) {
+      displayName = userDoc.data().name || "User";
+    }
+
+    navLinks.innerHTML += `
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          👤 ${displayName}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger fw-bold" href="#" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </a></li>
+        </ul>
+      </li>
+    `;
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      location.reload();
+    });
+  }
+});
+
+// ---------------- Chatbot Elements ----------------
+const chatbotBtn = document.getElementById("chatbotBtn");
+const chatbotWindow = document.getElementById("chatbotWindow");
+const closeChatbot = document.getElementById("closeChatbot");
+const chatbotMessages = document.getElementById("chatbotMessages");
+const chatbotInput = document.getElementById("chatbotInput");
+const sendMessageBtn = document.getElementById("sendMessage");
+
+// Toggle chatbot window
+chatbotBtn.addEventListener("click", () => chatbotWindow.classList.remove("d-none"));
+closeChatbot.addEventListener("click", () => chatbotWindow.classList.add("d-none"));
+
+// ---------------- Append Messages ----------------
+function appendMessage(sender, text, html = null) {
+  const div = document.createElement("div");
+  div.className = sender === "user" ? "user-msg" : "bot-msg";
+
+  if (html) {
+    div.innerHTML = html;
+  } else {
+    div.innerText = text;
+  }
+
+  chatbotMessages.appendChild(div);
+  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+// ---------------- Bot Reply Logic ----------------
+// Chatbot logic
+async function chatbotReply(message) {
+  const msg = message.toLowerCase().trim();
+  let reply = "Sorry, I didn’t understand that. Can you try again?";
+
+  // --- GREETINGS ---
+  if (/^(hi|hello|hey)$/i.test(msg)) {
+    reply = "Hi there 👋! How can I help you today?";
+  }
+
+  // --- FAQ ---
+  else if (msg.includes("open") || msg.includes("hours") || msg.includes("time")) {
+    reply = "⏰ We’re open daily from 10 AM to 11 PM.";
+  }
+  else if (msg.includes("delivery")) {
+    reply = "🚚 We deliver within Colombo in 30–45 minutes.";
+  }
+  else if (msg.includes("payment")) {
+    reply = "💳 We accept Cash on Delivery, Credit/Debit Cards, and Mobile Payments.";
+  }
+  else if (msg.includes("contact") || msg.includes("phone") || msg.includes("email")) {
+    reply = "📞 You can reach us at +94 77 123 4567 or email twistandtaste4@gmail.com.";
+  }
+  else if (msg.includes("location") || msg.includes("address")) {
+    reply = "📍 We’re located at 123 Twist & Taste St, Colombo, Sri Lanka.";
+  }
+
+  // --- Categories ---
+  else if (msg.includes("category") || msg.includes("categories") || msg.includes("how many")) {
+    const snapshot = await getDocs(collection(db, "categories"));
+    const cats = snapshot.docs.map(doc => doc.data().name);
+    reply = `📂 We have ${cats.length} categories: ${cats.join(", ")}`;
+  }
+
+  // --- Order Status ---
+  else if (msg.includes("order")) {
+    const words = msg.split(" ");
+    const orderId = words.find(w => /^[a-zA-Z0-9]+$/.test(w));
+    if (orderId) {
+      try {
+        const docSnap = await getDoc(doc(db, "orders", orderId));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          reply = `📦 Order ${orderId} is currently: ${data.status || "processing"}.`;
+        } else {
+          reply = `❌ No order found with ID: ${orderId}`;
+        }
+      } catch (err) {
+        reply = "⚠️ Error checking your order. Please try again.";
+      }
+    } else {
+      reply = "Please provide your order ID to check the status.";
+    }
+  }
+
+  // --- Food Search with Keywords + Did you mean...
+  else {
+    const foodsSnap = await getDocs(collection(db, "foods"));
+    let matches = [];
+
+    const words = msg.split(/\s+/); // user keywords
+
+    foodsSnap.forEach(doc => {
+      const f = doc.data();
+      const searchable = `${f.name} ${f.description} ${f.category} ${(f.keywords || []).join(" ")}`.toLowerCase();
+      let score = 0;
+      words.forEach(w => {
+        if (searchable.includes(w)) score++;
+      });
+      if (score > 0) matches.push({ ...f, score });
+    });
+
+    if (matches.length > 0) {
+      matches.sort((a,b) => b.score - a.score);
+      const bestMatches = matches.slice(0, 3);
+      let replyHTML = bestMatches.map(f => 
+        `🍴 ${f.name} - Rs.${f.price}`
+      ).join("<hr>");
+      appendMessage("bot", replyHTML);
+      return;
+    } else {
+      // Did you mean fallback using simple closest match
+      let foodNames = foodsSnap.docs.map(d => d.data().name.toLowerCase());
+      let closest = getClosestWord(msg, foodNames);
+      if (closest) reply = `⚠️ Sorry, I didn’t find "${message}". Did you mean "${closest}"?`;
+    }
+  }
+
+  appendMessage("bot", reply);
+}
+
+// --- Helper: Find closest word (simple Levenshtein distance)
+function getClosestWord(word, list) {
+  function levenshtein(a,b){
+    const matrix = [];
+    let i,j;
+    for(i=0;i<=b.length;i++){matrix[i]=[i];}
+    for(j=0;j<=a.length;j++){matrix[0][j]=j;}
+    for(i=1;i<=b.length;i++){
+      for(j=1;j<=a.length;j++){
+        if(b.charAt(i-1)===a.charAt(j-1)){matrix[i][j]=matrix[i-1][j-1];}
+        else{matrix[i][j]=Math.min(matrix[i-1][j-1]+1, matrix[i][j-1]+1, matrix[i-1][j]+1);}
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+  let minDist = Infinity, closest = null;
+  for(const w of list){
+    const dist = levenshtein(word, w);
+    if(dist < minDist && dist <= 3){ // threshold
+      minDist = dist;
+      closest = w;
+    }
+  }
+  return closest;
+
+
+
+  appendMessage("bot", reply);
+}
+
+// ---------------- Send Message ----------------
+sendMessageBtn.addEventListener("click", () => {
+  const msg = chatbotInput.value.trim();
+  if (!msg) return;
+  appendMessage("user", msg);
+  chatbotInput.value = "";
+  chatbotReply(msg);
+});
+
+chatbotInput.addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessageBtn.click();
+});
+
+
+const popularContainer = document.getElementById("popularDishes");
+// --- DOM elements you'll need ---
+
+  const cartCountEl = document.getElementById("cartCount");
+  const cartNavBtn = document.getElementById("cartNavBtn");
+
+
+ // helper: add item to cart in Firestore
+  async function addToCart(userId, foodId) {
+    try {
+      const foodDoc = await getDoc(doc(db, "foods", foodId));
+      if (!foodDoc.exists()) {
+        console.error("Food item not found:", foodId);
+        return;
+      }
+      const food = foodDoc.data();
+
+      // set or overwrite with quantity = 1 (you could merge if want to increase qty)
+      await setDoc(doc(db, "carts", userId, "items", foodId), {
+        name: food.name,
+        price: food.price || 0,
+        quantity: 1,
+        imageUrl: food.imageUrl || "",
+        extras: [],
+        extrasCost: 0
+      });
+
+      // optional: show a message
+      alert("✅ Added to cart!");
+
+      // update cart count in navbar
+      updateCartCount();
+
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
+  }
+
+  // === Load popular foods and render
+  async function loadPopularFoods() {
+    try {
+      const foodsRef = collection(db, "foods");
+      const allSnapshot = await getDocs(foodsRef);
+      const allFoodsData = [];
+
+      allSnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        allFoodsData.push({
+          id: docSnap.id,
+          ...data,
+          cartCount: data.cartCount || 0
+        });
+      });
+
+      // sort by cartCount desc
+      allFoodsData.sort((a, b) => b.cartCount - a.cartCount);
+      const topFoods = allFoodsData.slice(0, 12);
+
+      popularContainer.innerHTML = "";  // clear
+
+      topFoods.forEach((food, index) => {
+        popularContainer.innerHTML += `
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <div class="menu-card">
+              <img src="${food.imageUrl}" alt="${food.name}">
+              <div class="menu-card-body">
+                <h5>${food.name}</h5>
+                <p class="food-desc">${food.description || ""}</p>
+                <p>Rs <strong>${food.price ? food.price.toFixed(2) : "0.00"}</strong></p>
+                <a href="#" class="btn btn-danger addToCartBtn" data-id="${food.id}">Add to Cart</a>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      attachAddToCartEvents();
+
+    } catch (error) {
+      console.error("Error loading popular foods:", error);
+    }
+  }
+
+  // === Attach click handlers to those Add to Cart buttons
+  function attachAddToCartEvents() {
+    const btns = document.querySelectorAll(".addToCartBtn");
+    btns.forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const foodId = btn.getAttribute("data-id");
+        const user = auth.currentUser;
+
+        if (!user) {
+          // Not logged in, save pending, redirect
+          localStorage.setItem("pendingAddToCart", foodId);
+          window.location.href = "login.html";  // adjust path if needed
+          return;
+        }
+
+        // if logged in, directly add
+        await addToCart(user.uid, foodId);
+      });
+    });
+  }
+
+  
+
+  // === Auth state listener — also handles pending addToCart if any
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // remove login/signup from nav
+      navLinks.querySelectorAll('a[href="login.html"], a[href="signup.html"]').forEach(el => el.remove());
+
+      // You may want to re-render a user dropdown
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      let displayName = "User";
+      if (userDoc.exists()) {
+        displayName = userDoc.data().name || "User";
+      }
+
+   
+
+      document.getElementById("logoutBtn").addEventListener("click", async () => {
+        await signOut(auth);
+        // optionally clean up
+        location.reload();
+      });
+
+      // check if there's a pendingAddToCart
+      const pendingFoodId = localStorage.getItem("pendingAddToCart");
+      if (pendingFoodId) {
+        // clear it first so double-add doesn't happen
+        localStorage.removeItem("pendingAddToCart");
+        await addToCart(user.uid, pendingFoodId);
+      }
+
+      // update badge
+      updateCartCount();
+    } else {
+      // user logged out
+      updateCartCount();
+    }
+  });
+
+  // === On load
+  loadPopularFoods();
+
+
+async function loadReviews() {
+  try {
+    const reviewsRef = collection(db, "reviews");
+    const reviewsQuery = query(reviewsRef, orderBy("timestamp","desc"), limit(6));
+    const snapshot = await getDocs(reviewsQuery);
+
+    const reviewsContainer = document.getElementById("reviewsContainer");
+    reviewsContainer.innerHTML = "";
+
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      const stars = "⭐️".repeat(data.stars || 5);
+
+      // Get user name from userId
+      let reviewer = "Anonymous";
+      if (data.userId) {
+        const userDoc = await getDoc(doc(db,"users",data.userId));
+        if(userDoc.exists()) reviewer = userDoc.data().name || "Anonymous";
+      }
+
+      const avatarLetter = reviewer.charAt(0).toUpperCase();
+
+      const col = document.createElement("div");
+      col.className = "col-md-4";
+      col.dataset.aos = "fade-up";
+      col.innerHTML = `
+        <div class="review-card position-relative p-3">
+          <div class="d-flex align-items-center mb-3">
+            <div class="review-avatar">${avatarLetter}</div>
+            <h6 class="ms-3">${stars} – ${reviewer}</h6>
+          </div>
+          <p>${data.review || ""}</p>
+        </div>
+      `;
+      reviewsContainer.appendChild(col);
+    }
+
+    AOS.refresh();
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("reviewsContainer").innerHTML = '<p class="text-center text-white">No reviews available.</p>';
+  }
+}
+
+loadReviews();
+
+
+contactForm.addEventListener("submit", function(e){
+  e.preventDefault();
+  
+  const formData = {
+    from_name: this[0].value,
+    from_email: this[1].value,
+    message: this[2].value
+  };
+
+  emailjs.send("service_v2e1z6z", "template_4w9zbwu", formData)
+    .then(() => {
+      formMessage.textContent = "Message sent successfully!";
+      formMessage.style.color = "#28a745";
+      contactForm.reset();
+    }, (error) => {
+      console.error(error);
+      formMessage.textContent = "Failed to send message. Try again!";
+      formMessage.style.color = "#ffc107";
+    });
+});
+
+/**
+ * Update cart count in the navbar
+ */
+export async function updateCartCount() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const cartSnap = await getDocs(collection(db, "carts", user.uid, "items"));
+  const count = cartSnap.size;
+
+  const cartCountEl = document.getElementById("cartCount");
+  const cartNavBtn = document.getElementById("cartNavBtn");
+
+  if (cartCountEl) cartCountEl.innerText = count;
+
+  if (cartNavBtn) {
+    if (count === 0) {
+      cartNavBtn.classList.add("disabled");
+    } else {
+      cartNavBtn.classList.remove("disabled");
+    }
+  }
+}
+
+// Auto update after login
+onAuthStateChanged(auth, (user) => {
+  if (user) updateCartCount();
+});
+
+
+</script>
+
+
+<!-- Bootstrap + AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script> AOS.init({ duration:1000, once:true }); </script>
+<iframe src="footer.html" style="width:100%; border:none; height:300px;"></iframe>
+<script type="module" src="cart-utils.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard • Twist & Taste</title>
+
+<!-- Bootstrap & Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- QR Code -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+<style>
+body { background: #121212; color: #fff; font-family: 'Arial', sans-serif; }
+.navbar, .nav-tabs .nav-link.active { background-color: #000 !important; }
+.navbar .nav-link, .nav-tabs .nav-link { color: #fff !important; }
+.dashboard-header { margin-top: 20px; text-align: center; }
+.welcome-heading { font-weight: 700; font-size: 2rem; }
+.subheading { font-style: italic; color: #ccc; }
+.card-custom { border-radius: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); background: #1e1e1e; color: #fff; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.card-custom:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+.summary-card i { font-size: 2rem; margin-bottom: 5px; }
+.chat-box { max-height: 400px; overflow-y: auto; padding: 10px; display:flex; flex-direction:column; gap: 8px; }
+.chat-message { padding: 8px 12px; border-radius: 20px; max-width: 70%; display:inline-block; animation: fadeIn 0.3s; }
+.chat-message.user { background: #25d366; color: #fff; align-self: flex-end; border-bottom-right-radius: 0; }
+.chat-message.admin { background: #2c2c2c; color: #fff; align-self: flex-start; border-bottom-left-radius: 0; }
+.chat-footer { display:flex; gap:5px; margin-top:10px; }
+.chat-footer textarea { flex:1; border-radius: 20px; resize:none; padding:10px; background:#2c2c2c; color:#fff; border:none; }
+.chat-footer button { border-radius: 50%; width:45px; height:45px; display:flex; align-items:center; justify-content:center; }
+@keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform:translateY(0);} }
+.table-dark { background:#1e1e1e; color:#fff; }
+.table-dark th, .table-dark td { border-color: #333; }
+.progress { height: 25px; border-radius: 15px; background: #2c2c2c; }
+.progress-bar { font-weight: bold; }
+.list-group-item { background:#1e1e1e; border:none; }
+.list-group-item span.badge { min-width:60px; }
+.recent-order-item span:first-child {
+  color: #fff;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">🍔 Twist & Taste</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+
+
+
+ 
+      </ul>
+      <a href="menu.html" class="btn btn-danger ms-3">Order Now</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Greeting -->
+<div class="container dashboard-header">
+  <h2 class="welcome-heading">Welcome, <span id="userName">User</span> 👋</h2>
+  <p class="subheading">Your personalized dashboard at a glance</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="container mt-4">
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card card-custom text-center p-3 summary-card">
+      <i class="bi bi-bag-check text-success"></i>
+      <h5 id="totalOrders">0</h5>
+      <p>Total Orders</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-custom text-center p-3 summary-card">
+      <i class="bi bi-hourglass-split text-warning"></i>
+      <h5 id="pendingOrders">0</h5>
+      <p>Pending Orders</p>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card card-custom text-center p-3 summary-card">
+      <i class="bi bi-check-circle text-primary"></i>
+      <h5 id="completedOrders">0</h5>
+      <p>Completed Orders</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-custom text-center p-3 summary-card">
+      <i class="bi bi-chat-dots text-info"></i>
+      <h5 id="totalMessages">0</h5>
+      <p>Messages</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Tabs -->
+<div class="container mt-4">
+<ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#profileTab">Profile</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ordersTab">Orders</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#chatTab">Messages</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#activityTab">Activity</a></li>
+</ul>
+
+<div class="tab-content mt-3">
+<!-- Profile Tab -->
+<div class="tab-pane fade show active" id="profileTab">
+  <div class="card card-custom p-4">
+    <h5><i class="bi bi-person-circle"></i> Profile Info</h5>
+    <p><strong>Name:</strong> <span id="profileName">-</span></p>
+    <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+    <p><strong>Phone:</strong> <span id="profilePhone">-</span></p>
+    <p><strong>Address:</strong> <span id="profileAddress">-</span></p>
+    <button class="btn btn-primary mt-3" id="updateProfileBtn"><i class="bi bi-pencil-square"></i> Update Details</button>
+  </div>
+</div>
+
+<!-- Update Profile Modal -->
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4" style="border-radius:20px; background:#1e1e1e; color:#fff;">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="updateProfileForm">
+          <div class="mb-3">
+            <label for="updateName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="updateName" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="updateEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="updatePhone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="updatePhone">
+          </div>
+          <div class="mb-3">
+            <label for="updateAddress" class="form-label">Address</label>
+            <textarea class="form-control" id="updateAddress" rows="2"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Orders Tab -->
+<div class="tab-pane fade" id="ordersTab">
+  <div class="card card-custom p-4 table-responsive">
+    <h5><i class="bi bi-bag-check"></i> Orders</h5>
+    <table class="table table-dark align-middle">
+      <thead>
+        <tr><th>#</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>QR</th></tr>
+      </thead>
+      <tbody id="ordersTableBody">
+        <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- New Orders Summary -->
+    <div class="mt-4">
+      <h6 class="text-white mb-3">Order Status Overview</h6>
+      <div class="progress mb-2">
+        <div id="pendingProgress" class="progress-bar bg-warning" role="progressbar" style="width:0%">Pending: 0</div>
+      </div>
+      <div class="progress mb-2">
+        <div id="completedProgress" class="progress-bar bg-success" role="progressbar" style="width:0%">Completed: 0</div>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <h6 class="text-white mb-2">Recent Orders</h6>
+      <ul id="recentOrdersList" class="list-group list-group-flush"></ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- Chat Tab -->
+<div class="tab-pane fade" id="chatTab">
+  <div class="card card-custom p-3 d-flex flex-column" style="height:500px;">
+    <h5><i class="bi bi-chat-dots"></i> Chat with Admin</h5>
+    <div id="chatBox" class="chat-box flex-grow-1 mb-2"></div>
+    <div class="chat-footer">
+      <textarea id="chatInput" placeholder="Type a message..."></textarea>
+      <button id="sendBtn" class="btn btn-success"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Activity Tab -->
+<div class="tab-pane fade" id="activityTab">
+  <div class="card card-custom p-4">
+    <h5><i class="bi bi-clock-history"></i> Recent Activity</h5>
+    <div id="activityTimeline"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4" style="border-radius:20px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Order QR Code</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <canvas id="qrCanvas"></canvas>
+        <div id="qrOrderPreview" class="mt-3 text-start p-3 rounded bg-light text-dark" style="font-family:monospace; white-space: pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4" style="border-radius:20px; background:#1e1e1e; color:#fff;">
+      <div class="modal-header">
+        <h5 class="modal-title">Write a Review</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="reviewForm">
+          <div class="mb-3">
+            <label for="reviewText" class="form-label">Review</label>
+            <textarea id="reviewText" class="form-control" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <select id="reviewStars" class="form-select" required>
+              <option value="" disabled selected>Select stars</option>
+              <option value="1">⭐️</option>
+              <option value="2">⭐️⭐️</option>
+              <option value="3">⭐️⭐️⭐️</option>
+              <option value="4">⭐️⭐️⭐️⭐️</option>
+              <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Firebase + Script -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, orderBy, onSnapshot, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyAd899TaOCfg0RhMQjzQ9R5_cwqpXxNduU",
+ authDomain: "twistandtaste.firebaseapp.com",
+ projectId: "twistandtaste",
+ storageBucket: "twistandtaste.appspot.com",
+ messagingSenderId: "88111377756",
+ appId: "1:88111377756:web:067aad85b3e97b44eb6599",
+ measurementId: "G-L190CVJD8J"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const userNameEl = document.getElementById("userName");
+const profileNameEl = document.getElementById("profileName");
+const profileEmailEl = document.getElementById("profileEmail");
+const profilePhoneEl = document.getElementById("profilePhone");
+const profileAddressEl = document.getElementById("profileAddress");
+const ordersTableBody = document.getElementById("ordersTableBody");
+const activityTimeline = document.getElementById("activityTimeline");
+const totalOrdersEl = document.getElementById("totalOrders");
+const pendingOrdersEl = document.getElementById("pendingOrders");
+const completedOrdersEl = document.getElementById("completedOrders");
+const totalMessagesEl = document.getElementById("totalMessages");
+const chatBox = document.getElementById("chatBox");
+const chatInput = document.getElementById("chatInput");
+const sendBtn = document.getElementById("sendBtn");
+const updateProfileBtn = document.getElementById("updateProfileBtn");
+const updateProfileModal = new bootstrap.Modal(document.getElementById("updateProfileModal"));
+const updateProfileForm = document.getElementById("updateProfileForm");
+const navLogin = document.getElementById("navLogin");
+const navSignUp = document.getElementById("navSignUp");
+const navUserDropdown = document.getElementById("navUserDropdown");
+const navbarUserName = document.getElementById("navbarUserName");
+const logoutBtn = document.getElementById("logoutBtn");
+
+onAuthStateChanged(auth, async (user) => {
+  if(!user){ window.location.href="login.html"; return; }
+
+  const userDoc = await getDoc(doc(db,"users",user.uid));
+  const userData = userDoc.exists() ? userDoc.data() : {};
+  const displayName = userData.name || "User";
+  userNameEl.textContent = displayName;
+  profileNameEl.textContent = displayName;
+  profileEmailEl.textContent = userData.email || user.email;
+  profilePhoneEl.textContent = userData.mobile || "-";
+  profileAddressEl.textContent = userData.address || "-";
+
+  // Orders
+  const ordersQuery = query(collection(db,"orders"), where("userId","==",user.uid), orderBy("timestamp","desc"));
+  onSnapshot(ordersQuery, snapshot=>{
+    ordersTableBody.innerHTML = "";
+    let totalOrders=0, pendingOrders=0, completedOrders=0;
+
+    if(snapshot.empty){
+      ordersTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No orders yet.</td></tr>';
+    } else {
+      let index=1;
+      snapshot.forEach(docSnap=>{
+        const order = docSnap.data();
+        totalOrders++;
+        if(order.status==="Pending") pendingOrders++;
+       if (order.status === "Delivered") completedOrders++;
+
+        const items = order.items.map(i=>i.name+" x"+i.quantity).join(", ");
+        const total = "Rs."+(order.total||0);
+        const statusClass = order.status==="Pending" ? "status-pending" : order.status==="Processing" ? "status-processing" : order.status==="Completed" ? "status-completed":"status-cancelled";
+        const date = order.timestamp?.toDate().toLocaleString()||"-";
+
+        ordersTableBody.innerHTML += `
+        <tr>
+          <td>${index++}</td>
+          <td>${items}</td>
+          <td>${total}</td>
+          <td class="order-status ${statusClass}">${order.status}</td>
+          <td>${date}</td>
+       <td>
+  <button class="btn btn-sm btn-primary viewQrBtn" 
+          data-id="${docSnap.id}" 
+          data-items="${items}" 
+          data-total="${total}" 
+          data-status="${order.status}"
+          data-date="${date}"
+          data-payment="${order.paymentMethod}">
+    View QR
+  </button>
+  ${order.status === "Delivered" ? `
+    <button class="btn btn-sm btn-warning ms-1 writeReviewBtn" data-order-id="${docSnap.id}">Write Review</button>
+  ` : ''}
+</td>
+
+        </tr>`;
+      });
+    }
+
+
+    updateProfileBtn.addEventListener("click", () => {
+  document.getElementById("updateName").value = profileNameEl.textContent;
+  document.getElementById("updateEmail").value = profileEmailEl.textContent;
+  document.getElementById("updatePhone").value = profilePhoneEl.textContent;
+  document.getElementById("updateAddress").value = profileAddressEl.textContent;
+  updateProfileModal.show();
+});
+
+updateProfileForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const updatedData = {
+      name: document.getElementById("updateName").value,
+      email: document.getElementById("updateEmail").value,
+      mobile: document.getElementById("updatePhone").value,
+      address: document.getElementById("updateAddress").value
+    };
+    await setDoc(doc(db, "users", user.uid), updatedData, { merge: true });
+    
+    // Update profile display
+    profileNameEl.textContent = updatedData.name;
+    profileEmailEl.textContent = updatedData.email;
+    profilePhoneEl.textContent = updatedData.mobile;
+    profileAddressEl.textContent = updatedData.address;
+
+    updateProfileModal.hide();
+    alert("Profile updated successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update profile. Please try again.");
+  }
+});
+
+const reviewModal = new bootstrap.Modal(document.getElementById("reviewModal"));
+const reviewForm = document.getElementById("reviewForm");
+let currentReviewOrderId = null;
+
+// Event delegation for dynamically created buttons
+document.addEventListener("click", e => {
+  if(e.target.classList.contains("writeReviewBtn")){
+    currentReviewOrderId = e.target.dataset.orderId;
+    document.getElementById("reviewText").value = "";
+    document.getElementById("reviewStars").value = "";
+    reviewModal.show();
+  }
+});
+
+
+
+
+// Submit review
+reviewForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const reviewText = document.getElementById("reviewText").value.trim();
+  const reviewStars = parseInt(document.getElementById("reviewStars").value);
+
+  if(!currentReviewOrderId) return;
+
+  try {
+    await addDoc(collection(db, "reviews"), {
+      userId: user.uid,
+      orderId: currentReviewOrderId,
+      review: reviewText,
+      stars: reviewStars,
+      timestamp: new Date()
+    });
+
+    // Disable the button immediately
+    const btn = document.querySelector(`.writeReviewBtn[data-order-id="${currentReviewOrderId}"]`);
+    if(btn){
+      btn.textContent = "Reviewed";
+      btn.disabled = true;
+    }
+
+    reviewModal.hide();
+    alert("Review submitted successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to submit review. Try again.");
+  }
+});
+
+    // Summary cards
+    totalOrdersEl.textContent = totalOrders;
+    pendingOrdersEl.textContent = pendingOrders;
+    completedOrdersEl.textContent = completedOrders;
+
+    // Update progress bars
+    const totalForProgress = totalOrders || 1;
+    document.getElementById("pendingProgress").style.width = `${(pendingOrders/totalForProgress)*100}%`;
+    document.getElementById("pendingProgress").textContent = `Pending: ${pendingOrders}`;
+    document.getElementById("completedProgress").style.width = `${(completedOrders/totalForProgress)*100}%`;
+    document.getElementById("completedProgress").textContent = `Completed: ${completedOrders}`;
+
+    // Recent orders (last 5)
+    const recentOrdersList = document.getElementById("recentOrdersList");
+    recentOrdersList.innerHTML = "";
+    snapshot.docs.slice(0,5).forEach(docSnap=>{
+      const order = docSnap.data();
+      const items = order.items.map(i=>i.name+" x"+i.quantity).join(", ");
+      const li = document.createElement("li");
+     li.className = "list-group-item rounded mb-1 d-flex justify-content-between align-items-center recent-order-item";
+li.innerHTML = `<span>${items}</span> 
+                <span class="badge ${order.status==='Completed'?'bg-success':'bg-warning'} rounded-pill">${order.status}</span>`;
+      recentOrdersList.appendChild(li);
+    });
+  });
+
+  // Chat
+  const chatRef = collection(db,"chats");
+  onSnapshot(query(chatRef, orderBy("timestamp","asc")), snapshot=>{
+    chatBox.innerHTML = "";
+    let totalMessages = 0;
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      if(data.uid===user.uid && data.to==="agent"){
+        totalMessages++;
+        const div = document.createElement("div");
+        div.classList.add("chat-message","user");
+        div.innerText = data.message;
+        chatBox.appendChild(div);
+      }
+      if(data.to===user.uid && data.uid!==user.uid){
+        totalMessages++;
+        const div = document.createElement("div");
+        div.classList.add("chat-message","admin");
+        div.innerHTML = `<i class="fas fa-user-tie me-1"></i>${data.message}`;
+        chatBox.appendChild(div);
+      }
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+    totalMessagesEl.textContent = totalMessages;
+  });
+
+  async function sendMessage(){
+    const msg = chatInput.value.trim();
+    if(!msg) return;
+    await addDoc(chatRef,{uid:user.uid,name:displayName,to:"agent",message:msg,timestamp:new Date(),read:false});
+    chatInput.value="";
+    activityTimeline.innerHTML = `<div class="timeline-item"><b>Sent a message</b><br><small>${new Date().toLocaleString()}</small></div>` + activityTimeline.innerHTML;
+  }
+  sendBtn.addEventListener("click", sendMessage);
+  chatInput.addEventListener("keydown", e=>{if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendMessage();}});
+
+  // QR Code modal
+  document.addEventListener("click", e=>{
+    if(e.target.classList.contains("viewQrBtn")){
+      const orderId = e.target.dataset.id;
+      const items = e.target.dataset.items;
+      const total = e.target.dataset.total;
+      const status = e.target.dataset.status;
+      const date = e.target.dataset.date||"-";
+      const paymentMethod = e.target.dataset.payment||"COD";
+
+      const paymentInfo = paymentMethod==="Card" ? "Payment Done" : `Amount: ${total}`;
+      const qrData = { orderId, items, status, date, payment: paymentInfo };
+      const previewDiv = document.getElementById("qrOrderPreview");
+      previewDiv.innerHTML = `Order ID: ${orderId}\nItems: ${items}\nStatus: ${status}\nDate: ${date}\nPayment: ${paymentInfo}`;
+      const qrCanvas = document.getElementById("qrCanvas");
+      QRCode.toCanvas(qrCanvas, JSON.stringify(qrData), { width:220 }, err=>{ if(err) console.error(err); });
+      const modal = new bootstrap.Modal(document.getElementById("qrModal"));
+      modal.show();
+    }
+  });
+
+  // Initial activity
+  activityTimeline.innerHTML = `<div class="timeline-item"><b>Logged in</b><br><small>${new Date().toLocaleString()}</small></div>`;
+});
+
+
+/**
+ * Update cart count in the navbar
+ */
+export async function updateCartCount() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const cartSnap = await getDocs(collection(db, "carts", user.uid, "items"));
+  const count = cartSnap.size;
+
+  const cartCountEl = document.getElementById("cartCount");
+  const cartNavBtn = document.getElementById("cartNavBtn");
+
+  if (cartCountEl) cartCountEl.innerText = count;
+
+  if (cartNavBtn) {
+    if (count === 0) {
+      cartNavBtn.classList.add("disabled");
+    } else {
+      cartNavBtn.classList.remove("disabled");
+    }
+  }
+}
+
+// Auto update after login
+onAuthStateChanged(auth, (user) => {
+  if (user) updateCartCount();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<iframe src="footer.html" style="width:100%; border:none; height:300px;"></iframe>
+
+
+</body>
+</html>

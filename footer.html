@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Footer Template</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Footer Section -->
+  <footer class="footer text-white pt-5 pb-3 mt-5">
+    <div class="container">
+      <div class="row gy-4">
+        
+        <!-- Brand / About -->
+        <div class="col-md-4 text-center text-md-start">
+          <h4 class="footer-brand">🍔 Twist & Taste</h4>
+          <p class="footer-desc">
+            Fast, fresh & full of flavor! Serving pizza, burgers, fries and more with a unique twist.
+          </p>
+        </div>
+
+        <!-- Menu -->
+        <div class="col-md-4 text-center">
+          <h5 class="footer-title">🍴 Popular Foods</h5>
+          <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+            <span class="food-tag">🍕 Pizza</span>
+            <span class="food-tag">🍔 Burger</span>
+            <span class="food-tag">🌭 Hot Dog</span>
+            <span class="food-tag">🥪 Sandwich</span>
+            <span class="food-tag">🍟 Fries</span>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="col-md-4 text-center text-md-end">
+          <h5 class="footer-title">📞 Contact</h5>
+          <p><i class="bi bi-geo-alt-fill"></i> 123 Main Street, Colombo</p>
+          <p><i class="bi bi-telephone-fill"></i> +94 77 123 4567</p>
+          <p><i class="bi bi-envelope-fill"></i> info@twistandtaste.com</p>
+        </div>
+      </div>
+
+      <hr class="border-light mt-4" />
+      <div class="text-center small fade-in">
+        © 2025 Twist & Taste | Crafted with ❤️
+      </div>
+    </div>
+  </footer>
+
+  <!-- Footer Styles -->
+  <style>
+  .footer {
+    background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+    border-radius: 30px 30px 0 0;
+    animation: fadeInUp 0.8s ease forwards;
+    box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .footer-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ff3b30;
+    animation: slideInLeft 0.8s ease forwards;
+  }
+
+  .footer-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    animation: slideInUp 0.8s ease forwards;
+  }
+
+  .footer-desc {
+    color: #bbb;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: fadeIn 1s ease forwards;
+  }
+
+  .food-tag {
+    background: #ff3b30;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+
+  .food-tag:hover {
+    transform: scale(1.1);
+    background: #ff5e57;
+  }
+
+  footer p {
+    color: #ddd;
+    margin-bottom: 6px;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  footer p:hover {
+    transform: translateX(5px);
+    color: #ff3b30;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px);}
+    to { opacity: 1; transform: translateY(0);}
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px);}
+    to { opacity: 1; transform: translateX(0);}
+  }
+
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0;}
+    to { opacity: 1;}
+  }
+
+  .fade-in {
+    animation: fadeIn 2s ease forwards;
+  }
+  </style>
+
+</body>
+</html>
