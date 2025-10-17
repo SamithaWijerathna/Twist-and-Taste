@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <button id="darkModeToggle" class="btn btn-secondary float-end mb-3">
+  <i class="fas fa-moon"></i> Dark Mode
+</button>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard • Twist & Taste</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  body { background-color: #f8f9fa; }
+  .card { border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+  .chat-box { max-height: 400px; overflow-y: auto; padding: 15px; border-radius: 5px; background: #fefefe; }
+  .chat-message { margin-bottom: 10px; padding: 8px 12px; border-radius: 20px; display: inline-block; max-width: 75%; transition:0.3s; }
+  .chat-message.user { background-color:#0d6efd; color:white; align-self:flex-start; animation:slideInLeft 0.3s ease; }
+  .chat-message.admin { background-color:#198754; color:white; align-self:flex-end; animation:slideInRight 0.3s ease; }
+  @keyframes slideInLeft { from { transform: translateX(-50px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+  @keyframes slideInRight { from { transform: translateX(50px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+  table tr { transition: all 0.3s; }
+  table tr:hover { background-color: #f1f1f1; }
+
+    :root {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #fff;
+    --sidebar-bg: #343a40;
+    --sidebar-text: #fff;
+    --btn-primary-bg: #0d6efd;
+  }
+
+  body { background-color: var(--bg-color); color: var(--text-color); transition: all 0.3s; }
+  .card { background-color: var(--card-bg); transition: all 0.3s; }
+  .sidebar { background-color: var(--sidebar-bg); color: var(--sidebar-text); }
+  .btn-primary { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); }
+
+  .dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --card-bg: #1e1e1e;
+    --sidebar-bg: #1c1c1c;
+    --sidebar-text: #f1f1f1;
+    --btn-primary-bg: #0d6efd;
+  }
+
+  .chat-box {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  max-width: 70%;
+}
+
+.chat-message.user {
+  background-color: #e0e0e0;
+  text-align: left;
+}
+
+.chat-message.admin {
+  background-color: #0d6efd;
+  color: white;
+  text-align: right;
+  margin-left: auto;
+}
+
+
+</style>
+</head>
+<body class="container py-4">
+
+<h2 class="mb-4"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+
+<!-- Top Navigation for Tabs -->
+<ul class="nav nav-pills mb-4" id="adminTabs" role="tablist">
+  <li class="nav-item">
+  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#dashboard">
+    <i class="fas fa-chart-line"></i> Dashboard
+  </button>
+</li>
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#foods"><i class="fas fa-hamburger"></i> Foods</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#categories"><i class="fas fa-list"></i> Categories</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders"><i class="fas fa-receipt"></i> Orders</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#users"><i class="fas fa-users"></i> Users</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#chats"><i class="fas fa-comments"></i> Chats</button></li>
+  <li class="nav-item">
+  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reports">
+    <i class="fas fa-file-alt"></i> Reports
+  </button>
+</li>
+</ul>
+
+<div class="tab-content" id="adminTabsContent">
+
+  <!-- Dashboard Tab -->
+<div class="tab-pane fade" id="dashboard">
+  <div class="row g-3">
+
+    <!-- Summary Cards -->
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h5>Total Foods</h5>
+        <h2 id="totalFoods">0</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h5>Total Orders</h5>
+        <h2 id="totalOrders">0</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h5>Total Users</h5>
+        <h2 id="totalUsers">0</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h5>Total Categories</h5>
+        <h2 id="totalCategories">0</h2>
+      </div>
+    </div>
+
+  <!-- Sales by Category -->
+  <div class="col-lg-3 col-md-6 col-sm-12">
+    <div class="card p-3">
+      <h5>Sales by Category</h5>
+      <canvas id="categoryChart" style="height:250px;"></canvas>
+    </div>
+  </div>
+</div>
+<!-- Daily Revenue Chart -->
+<div class="col-md-6">
+  <div class="card p-3">
+    <h5>Daily Revenue (Last 7 days)</h5>
+    <canvas id="dailyRevenueChart"></canvas>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Last 7 Days Income -->
+  <div class="col-lg-6 col-md-12 col-sm-12">
+    <div class="card p-3">
+      <h5>Last 7 Days Income</h5>
+      <canvas id="incomeChart" style="height:250px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Most Sold Food Today -->
+  <div class="col-lg-3 col-md-6 col-sm-12">
+    <div class="card p-3">
+      <h5>Most Sold Food Today</h5>
+      <ul class="list-group" id="mostSoldFoodList" style="max-height:250px; overflow-y:auto;"></ul>
+    </div>
+  </div>
+
+
+
+    <!-- Recent Orders -->
+    <div class="col-12">
+      <div class="card p-3">
+        <h5>Recent Orders</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered" id="recentOrdersTable">
+            <thead><tr><th>Order ID</th><th>User</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Reports Tab -->
+<div class="tab-pane fade" id="reports">
+  <div class="card p-3">
+    <h5>Sales Reports</h5>
+    <button class="btn btn-primary mb-3" id="generateSalesReport">
+      <i class="fas fa-chart-pie"></i> Generate Sales Report
+    </button>
+    <div id="salesReport"></div>
+  </div>
+</div>
+
+
+  <!-- Foods Tab -->
+  <div class="tab-pane fade show active" id="foods">
+    <div class="card p-3">
+      <h4><i class="fas fa-hamburger"></i> Add / Edit Food</h4>
+      <form id="foodForm" class="mb-3">
+        <input type="hidden" id="foodId">
+        <div class="row g-2">
+
+
+
+ <div class="col-md-2"><select id="foodCategory" class="form-select"></select></div>
+
+          <div class="col-md-3"><input type="text" id="foodName" class="form-control" placeholder="Food Name" required></div>
+          <div class="col-md-5">
+
+  <textarea id="foodDescription" class="form-control" placeholder="Food Description" rows="2" required></textarea>
+</div>
+          <div class="col-md-2"><input type="number" id="foodPrice" class="form-control" placeholder="Price" required></div>
+
+          <input type="file" id="foodImage" class="form-control" accept="image/*" multiple required>
+
+
+         
+
+          <div class="col-12 mt-2">
+  <label class="form-label"><i class="fas fa-plus-circle"></i> Extra Items</label>
+  <div id="extrasContainer"></div>
+
+  <button type="button" id="addExtraBtn" class="btn btn-sm btn-secondary mt-2">
+    <i class="fas fa-plus"></i> Add Extra
+  </button>
+</div>
+
+         <button type="submit" class="btn btn-success w-100"><i class="fas fa-save"></i> Save</button>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="foodsTable">
+          <thead><tr><th>Name</th><th>Price</th><th>Category</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Tab -->
+  <div class="tab-pane fade" id="categories">
+    <div class="card p-3">
+      <h4><i class="fas fa-list"></i> Manage Categories</h4>
+      <form id="categoryForm" class="mb-3 d-flex">
+        <input type="hidden" id="categoryId">
+        <input type="text" id="categoryName" class="form-control me-2" placeholder="Category Name" required>
+        <input type="file" id="categoryImage" class="form-control me-2" accept="image/*" required>
+
+        <button type="submit" class="btn btn-success w-100"><i class="fas fa-save"></i> Save</button>
+      </form>
+      <ul class="list-group" id="categoriesList"></ul>
+    </div>
+  </div>
+
+  <!-- Orders Tab -->
+  <div class="tab-pane fade" id="orders">
+    <div class="card p-3">
+      <h4><i class="fas fa-receipt"></i> All Orders</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="ordersTable">
+          <thead><tr><th>Order ID</th><th>User</th><th>Items</th><th>Total Amount</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div class="tab-pane fade" id="users">
+    <div class="card p-3">
+      <h4><i class="fas fa-users"></i> Registered Users</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="usersTable">
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+ <!-- Chats Tab -->
+<div class="tab-pane fade" id="chats">
+  <div class="card p-3">
+    <h4><i class="fas fa-comments"></i> User Chats</h4>
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <input type="text" id="searchUser" class="form-control mb-2" placeholder="Search user...">
+        <ul class="list-group" id="usersList" style="max-height:500px; overflow-y:auto;"></ul>
+      </div>
+      <div class="col-md-9 d-flex flex-column">
+        <div class="chat-box d-flex flex-column mb-2" id="adminChatBox"></div>
+        <div class="input-group">
+          <input type="text" id="replyInput" class="form-control" placeholder="Type your reply...">
+          <button class="btn btn-success" id="sendReplyBtn"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, doc, deleteDoc, query, orderBy, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAd899TaOCfg0RhMQjzQ9R5_cwqpXxNduU",
+  authDomain: "twistandtaste.firebaseapp.com",
+  projectId: "twistandtaste",
+  storageBucket: "twistandtaste.firebasestorage.app",
+  messagingSenderId: "88111377756",
+  appId: "1:88111377756:web:067aad85b3e97b44eb6599",
+  measurementId: "G-L190CVJD8J"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+const ctxIncome = document.getElementById("incomeChart").getContext("2d");
+ctxIncome.canvas.height = 250; // fix height
+
+const ctxCategory = document.getElementById("categoryChart").getContext("2d");
+ctxCategory.canvas.height = 250; // fix height
+
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "admin-login.html";
+    return;
+  }
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (!userDoc.exists()) return window.location.href = "admin-login.html";
+    const userData = userDoc.data();
+    if (!(userData.isAdmin === true || userData.isAdmin === "true")) {
+      alert("You are not an admin!"); window.location.href = "admin-login.html"; return;
+    }
+    document.querySelector("h2").textContent = "Welcome Admin, " + (userData.name || "Admin");
+    loadCategories();
+    loadFoods();
+    loadOrders();
+    loadUsers();
+  } catch (err) { console.error(err); window.location.href = "admin-login.html"; }
+});
+
+// ----- Load Categories -----
+function loadCategories() {
+  const list = document.getElementById("categoriesList");
+  const selectCat = document.getElementById("foodCategory");
+  if (!list || !selectCat) return;
+
+  onSnapshot(collection(db, "categories"), snapshot => {
+    list.innerHTML = "";
+    selectCat.innerHTML = '<option value="">Select Category</option>';
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (!data.name) return;
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      const leftDiv = document.createElement("div"); leftDiv.className = "d-flex align-items-center";
+      if (data.imageUrl) {
+        const img = document.createElement("img");
+        img.src = data.imageUrl; img.style.width = "40px"; img.style.height = "40px"; img.style.objectFit = "cover"; img.style.marginRight = "10px"; img.className = "rounded";
+        leftDiv.appendChild(img);
+      }
+      leftDiv.appendChild(document.createElement("span")).textContent = data.name;
+      li.appendChild(leftDiv);
+
+      const btnGroup = document.createElement("div");
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-sm btn-primary me-2";
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      editBtn.addEventListener("click", () => {
+        document.getElementById("categoryId").value = docSnap.id;
+        document.getElementById("categoryName").value = data.name;
+      });
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn btn-sm btn-danger";
+      delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+      delBtn.addEventListener("click", async () => {
+        if (confirm(`Delete category "${data.name}"?`)) await deleteDoc(doc(db, "categories", docSnap.id));
+      });
+      btnGroup.appendChild(editBtn); btnGroup.appendChild(delBtn); li.appendChild(btnGroup);
+      list.appendChild(li);
+
+      const option = document.createElement("option"); option.value = data.name; option.textContent = data.name;
+      selectCat.appendChild(option);
+    });
+  });
+}
+
+// ----- Add/Edit Category -----
+document.getElementById("categoryForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("categoryId").value;
+  const name = document.getElementById("categoryName").value.trim();
+  const imageFile = document.getElementById("categoryImage")?.files[0];
+  if (!name) return alert("Category name is required");
+  let imageUrl = "";
+  if (imageFile) {
+    const storageRef = ref(storage, `foodcategory/${name}/${imageFile.name}`);
+    await uploadBytes(storageRef, imageFile);
+    imageUrl = await getDownloadURL(storageRef);
+  }
+  const data = { name }; if (imageUrl) data.imageUrl = imageUrl;
+  try { if (id) await setDoc(doc(db, "categories", id), data, { merge: true }); else await addDoc(collection(db, "categories"), data); e.target.reset(); document.getElementById("categoryId").value = ""; alert("Category saved!"); } catch (err) { console.error(err); alert("Error saving category"); }
+});
+
+// ----- Extras Handling -----
+const extrasContainer = document.getElementById("extrasContainer");
+document.getElementById("addExtraBtn").addEventListener("click", () => createExtraRow());
+
+function createExtraRow(name = "", price = "") {
+  const div = document.createElement("div"); div.className = "d-flex gap-2 mb-2 extra-row";
+  div.innerHTML = `
+    <input type="text" class="form-control extra-name" placeholder="Extra Name" value="${name}" required>
+    <input type="number" class="form-control extra-price" placeholder="Price (LKR)" value="${price}" required>
+    <button type="button" class="btn btn-danger btn-sm remove-extra"><i class="fas fa-trash"></i></button>
+  `;
+  div.querySelector(".remove-extra").addEventListener("click", () => div.remove());
+  extrasContainer.appendChild(div);
+}
+
+function loadExtrasForFood(extras = []) { extrasContainer.innerHTML = ""; extras.forEach(e => createExtraRow(e.name, e.price)); }
+function getExtrasFromForm() { const arr = []; extrasContainer.querySelectorAll(".extra-row").forEach(r => { const n = r.querySelector(".extra-name").value.trim(); const p = parseFloat(r.querySelector(".extra-price").value); if (n && !isNaN(p)) arr.push({name:n,price:p}); }); return arr; }
+
+// ----- Load Foods -----
+function loadFoods() {
+  const tbody = document.querySelector("#foodsTable tbody"); if(!tbody) return;
+  onSnapshot(collection(db, "foods"), snapshot => {
+    tbody.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data(); const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><img src="${data.imageUrl||''}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;margin-right:8px;"> ${data.name||"N/A"}</td>
+        <td>${data.price != null ? data.price : "0"}</td>
+        <td>${data.category||"Uncategorized"}</td>
+        <td>
+          <button class="btn btn-sm btn-primary edit"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-danger delete"><i class="fas fa-trash"></i></button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      tr.querySelector(".edit").addEventListener("click", () => {
+        document.getElementById("foodId").value = docSnap.id;
+        document.getElementById("foodName").value = data.name||"";
+        document.getElementById("foodPrice").value = data.price||"";
+        document.getElementById("foodCategory").value = data.category||"";
+        document.getElementById("foodDescription").value = data.description||"";
+        loadExtrasForFood(data.extras || []);
+      });
+      tr.querySelector(".delete").addEventListener("click", async () => { if(confirm(`Delete food "${data.name}"?`)) await deleteDoc(doc(db, "foods", docSnap.id)); });
+    });
+  });
+}
+
+// ----- Add/Edit Food -----
+document.getElementById("foodForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("foodId").value;
+  const name = document.getElementById("foodName").value.trim();
+  const price = parseFloat(document.getElementById("foodPrice").value);
+  const category = document.getElementById("foodCategory").value;
+  const description = document.getElementById("foodDescription").value.trim();
+  const imageFiles = document.getElementById("foodImage")?.files;
+  if(!name||isNaN(price)||!category||!description) return alert("Fill all required fields");
+
+  let imageUrls = [];
+  if(imageFiles && imageFiles.length>0){
+    for(let i=0;i<imageFiles.length;i++){
+      const file=imageFiles[i];
+      const storageRef=ref(storage, `foods/${category}/${name}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef,file);
+      imageUrls.push(await getDownloadURL(storageRef));
+    }
+  }
+
+  const extras = getExtrasFromForm();
+  const data = {name, price, category, description, extras};
+  if(imageUrls.length>0){ data.imageUrls=imageUrls; data.imageUrl=imageUrls[0]; }
+
+  try { if(id) await setDoc(doc(db,"foods",id), data, {merge:true}); else await addDoc(collection(db,"foods"), data); e.target.reset(); document.getElementById("foodId").value=""; extrasContainer.innerHTML=""; alert("Food saved!"); } catch(err){ console.error(err); alert("Error saving food"); }
+});
+
+
+
+
+
+
+
+// ----- Dashboard Stats -----
+async function loadDashboard() {
+  // Total Foods
+  const foodsSnap = await getDocs(collection(db, "foods"));
+  document.getElementById("totalFoods").textContent = foodsSnap.size;
+
+  // Total Orders
+  const ordersSnap = await getDocs(collection(db, "orders"));
+  document.getElementById("totalOrders").textContent = ordersSnap.size;
+
+  // Total Users
+  const usersSnap = await getDocs(collection(db, "users"));
+  document.getElementById("totalUsers").textContent = usersSnap.size;
+
+  // Total Categories
+  const categoriesSnap = await getDocs(collection(db, "categories"));
+  document.getElementById("totalCategories").textContent = categoriesSnap.size;
+
+  // Recent Orders
+  const recentOrdersTbody = document.querySelector("#recentOrdersTable tbody");
+  recentOrdersTbody.innerHTML = "";
+  ordersSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    let total = 0;
+    (data.items || []).forEach(i => { total += (i.price + (i.extrasCost || 0)) * (i.quantity || 1); });
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${docSnap.id}</td><td>${data.userName||"N/A"}</td><td>Rs.${total}</td><td>${data.status||"Pending"}</td>`;
+    recentOrdersTbody.appendChild(tr);
+  });
+
+  // Low Stock Foods (example: price < 500)
+  const lowStock = [];
+  foodsSnap.forEach(docSnap => { const d = docSnap.data(); if(d.price && d.price < 500) lowStock.push(d.name); });
+  const lowStockUl = document.getElementById("lowStockFoods");
+  lowStockUl.innerHTML = lowStock.map(f => `<li class="list-group-item">${f}</li>`).join("");
+}
+
+// ----- Reports -----
+document.getElementById("generateSalesReport").addEventListener("click", async () => {
+  const ordersSnap = await getDocs(collection(db, "orders"));
+  let totalRevenue = 0;
+  const categoryRevenue = {};
+  ordersSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    (data.items || []).forEach(i => {
+      const subtotal = (i.price + (i.extrasCost || 0)) * (i.quantity || 1);
+      totalRevenue += subtotal;
+      const cat = i.category || "Uncategorized";
+      if(!categoryRevenue[cat]) categoryRevenue[cat] = 0;
+      categoryRevenue[cat] += subtotal;
+    });
+  });
+  let reportHtml = `<h6>Total Revenue: Rs.${totalRevenue}</h6>`;
+  reportHtml += `<h6>Revenue by Category:</h6><ul>`;
+  for(const cat in categoryRevenue) reportHtml += `<li>${cat}: Rs.${categoryRevenue[cat]}</li>`;
+  reportHtml += "</ul>";
+  document.getElementById("salesReport").innerHTML = reportHtml;
+});
+
+// Run dashboard stats on load
+loadDashboard();
+
+
+let incomeChartInstance;
+
+async function updateIncomeAndTopFoods() {
+  const ordersSnap = await getDocs(collection(db, "orders"));
+
+  const today = new Date();
+  const dailyIncome = {};
+  const foodCountToday = {};
+
+  // Prepare last 7 days keys
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    dailyIncome[key] = 0;
+  }
+
+  ordersSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (!data.items || !data.timestamp) return;
+
+    const orderDate = new Date(data.timestamp.seconds * 1000);
+    const orderKey = orderDate.toISOString().split("T")[0];
+
+    // Add to daily income (last 7 days)
+    if (orderKey in dailyIncome) {
+      let total = 0;
+      data.items.forEach(i => {
+        const subtotal = (i.price + (i.extrasCost || 0)) * (i.quantity || 1);
+        total += subtotal;
+
+        // Count today's foods
+        const todayKey = today.toISOString().split("T")[0];
+        if (orderKey === todayKey) {
+          if (!foodCountToday[i.name]) foodCountToday[i.name] = 0;
+          foodCountToday[i.name] += i.quantity || 1;
+        }
+      });
+      dailyIncome[orderKey] += total;
+    }
+  });
+
+  // --- Income Chart with Trend Line ---
+  const labels = Object.keys(dailyIncome);
+  const dataValues = labels.map(d => dailyIncome[d]);
+
+  // Simple trend line calculation (linear regression)
+  const n = dataValues.length;
+  const x = Array.from({length: n}, (_, i) => i + 1);
+  const y = dataValues;
+  const sumX = x.reduce((a,b)=>a+b,0), sumY = y.reduce((a,b)=>a+b,0);
+  const sumXY = x.reduce((sum,i,idx)=>sum + i*y[idx],0);
+  const sumX2 = x.reduce((sum,i)=>sum + i*i,0);
+  const slope = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
+  const intercept = (sumY - slope*sumX)/n;
+  const trend = x.map(i => slope*i + intercept);
+
+  if(incomeChartInstance) incomeChartInstance.destroy();
+  const ctxIncome = document.getElementById("incomeChart").getContext("2d");
+  incomeChartInstance = new Chart(ctxIncome, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Daily Income (LKR)', data: dataValues, backgroundColor: '#0d6efd' },
+        { label: 'Trend', data: trend, type: 'line', borderColor: 'red', borderWidth: 2, fill: false, tension: 0.3 }
+      ]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero:true } } }
+  });
+
+  // --- Most Sold Food Today ---
+  const sortedFoods = Object.entries(foodCountToday).sort((a,b)=>b[1]-a[1]);
+  const topFoodList = document.getElementById("mostSoldFoodList");
+  topFoodList.innerHTML = '';
+  if(sortedFoods.length===0){
+    topFoodList.innerHTML = '<li class="list-group-item">No orders today</li>';
+  } else {
+    sortedFoods.forEach(([name, qty])=>{
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between";
+      li.innerHTML = `<span>${name}</span><span class="badge bg-success">${qty}</span>`;
+      topFoodList.appendChild(li);
+    });
+  }
+}
+
+// Call this after dashboard load and after orders update
+updateIncomeAndTopFoods();
+
+
+
+
+let categoryChartInstance, dailyRevenueChartInstance;
+
+async function updateCharts() {
+  const ordersSnap = await getDocs(collection(db, "orders"));
+  const categoryRevenue = {};
+  const dailyRevenue = {};
+
+  const today = new Date();
+  for(let i=0;i<7;i++){
+    const d = new Date(today);
+    d.setDate(today.getDate()-i);
+    const key = d.toISOString().split("T")[0];
+    dailyRevenue[key] = 0;
+  }
+
+  ordersSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    const orderDate = data.timestamp ? new Date(data.timestamp.seconds*1000) : new Date();
+    const dayKey = orderDate.toISOString().split("T")[0];
+    (data.items || []).forEach(i => {
+      const subtotal = (i.price + (i.extrasCost || 0)) * (i.quantity || 1);
+      // Category revenue
+      const cat = i.category || "Uncategorized";
+      if (!categoryRevenue[cat]) categoryRevenue[cat] = 0;
+      categoryRevenue[cat] += subtotal;
+      // Daily revenue (last 7 days)
+      if(dayKey in dailyRevenue) dailyRevenue[dayKey] += subtotal;
+    });
+  });
+
+  // ----- Category Chart -----
+  const catLabels = Object.keys(categoryRevenue);
+  const catData = Object.values(categoryRevenue);
+  if(categoryChartInstance) categoryChartInstance.destroy();
+  const ctxCat = document.getElementById("categoryChart").getContext("2d");
+  categoryChartInstance = new Chart(ctxCat, {
+    type: 'pie',
+    data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catLabels.map(()=>`hsl(${Math.random()*360},70%,50%)`) }] },
+    options: { responsive: true }
+  });
+
+  // ----- Daily Revenue Chart -----
+  const dayLabels = Object.keys(dailyRevenue).sort();
+  const dayData = dayLabels.map(k => dailyRevenue[k]);
+  if(dailyRevenueChartInstance) dailyRevenueChartInstance.destroy();
+  const ctxDay = document.getElementById("dailyRevenueChart").getContext("2d");
+  dailyRevenueChartInstance = new Chart(ctxDay, {
+    type: 'bar',
+    data: { labels: dayLabels, datasets: [{ label: 'Revenue', data: dayData, backgroundColor: '#0d6efd' }] },
+    options: { responsive: true, scales: { y: { beginAtZero:true } } }
+  });
+}
+
+// Call after dashboard load
+updateCharts();
+
+
+
+
+// ----- Orders -----
+async function loadOrders() {
+  const tbody = document.querySelector("#ordersTable tbody");
+  tbody.innerHTML = "";
+
+  const snapshot = await getDocs(collection(db, "orders"));
+
+  // Convert snapshot to array and sort: Pending/Preparing first
+  const orders = snapshot.docs
+    .map(docSnap => ({ id: docSnap.id, data: docSnap.data() }))
+    .sort((a, b) => {
+      const statusOrder = { "Pending": 1, "Preparing": 2, "Delivered": 3, "Cancelled": 4 };
+      return (statusOrder[a.data.status] || 5) - (statusOrder[b.data.status] || 5);
+    });
+
+  orders.forEach(({ id, data }) => {
+    let total = 0;
+
+    // Build items list
+    const itemsHtml = (data.items || []).map(i => {
+      const unitPrice = (i.price || 0) + (i.extrasCost || 0);
+      const subtotal = unitPrice * (i.quantity || 1);
+      total += subtotal;
+
+      return `
+        <div style="margin-bottom:5px;">
+          <strong>${i.name}</strong> 
+          (x${i.quantity}) - Rs.${unitPrice} each<br>
+          ${i.extras && i.extras.length > 0 ? `<em>Extras: ${i.extras.join(", ")}</em><br>` : ""}
+          Subtotal: Rs.${subtotal}
+        </div>
+      `;
+    }).join("");
+
+    const tr = document.createElement("tr");
+
+    // Add attention label if order is new (Pending)
+    const attentionLabel = data.status === "Pending" 
+      ? `<span class="badge bg-danger">New</span>` 
+      : "";
+
+    tr.innerHTML = `
+      <td>${id} ${attentionLabel}</td>
+      <td>${data.userName || "N/A"}</td>
+      <td>${itemsHtml}</td>
+      <td><strong>Total: Rs.${total}</strong></td>
+      <td>
+        <select class="form-select status">
+          <option ${data.status === "Pending" ? "selected" : ""}>Pending</option>
+          <option ${data.status === "Preparing" ? "selected" : ""}>Preparing</option>
+          <option ${data.status === "Delivered" ? "selected" : ""}>Delivered</option>
+          <option ${data.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+        </select>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-success update">
+          <i class="fas fa-check"></i>
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+
+    // Update status event
+    tr.querySelector(".update").addEventListener("click", async () => {
+      const status = tr.querySelector(".status").value;
+      if (status === "Cancelled") {
+        if (!confirm(`Are you sure you want to cancel order "${id}"?`)) return;
+      }
+      await setDoc(doc(db, "orders", id), { ...data, status });
+      loadOrders();
+    });
+  });
+}
+
+
+// ----- Users -----
+async function loadUsers(){
+  const tbody=document.querySelector("#usersTable tbody"); tbody.innerHTML="";
+  const snapshot=await getDocs(collection(db,"users"));
+  snapshot.forEach(docSnap=>{
+    const u=docSnap.data();
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${u.name}</td><td>${u.email}</td><td>${u.phone||""}</td><td>${u.address||""}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ----- Dark Mode -----
+const darkModeToggle = document.getElementById("darkModeToggle");
+if(localStorage.getItem("darkMode") === "enabled") document.body.classList.add("dark-mode");
+darkModeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+  if(document.body.classList.contains("dark-mode")){
+    localStorage.setItem("darkMode","enabled");
+    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+  } else {
+    localStorage.setItem("darkMode","disabled");
+    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+  }
+});
+if(document.body.classList.contains("dark-mode")){
+  darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+}
+
+// ----- Admin Chats -----
+const adminChatBox = document.getElementById("adminChatBox");
+const replyInput = document.getElementById("replyInput");
+const sendReplyBtn = document.getElementById("sendReplyBtn");
+const usersList = document.getElementById("usersList");
+const searchUser = document.getElementById("searchUser");
+
+let usersMap = {};       
+let selectedUser = "";   
+let unreadMap = {};      
+
+async function loadChatUsers() {
+  const snapshot = await getDocs(collection(db, "users"));
+  usersMap = {};
+  unreadMap = {};
+  snapshot.forEach(docSnap => {
+    const u = docSnap.data();
+    usersMap[docSnap.id] = u.name || "Unknown";
+    unreadMap[docSnap.id] = 0; 
+  });
+  updateUserList();
+}
+
+function updateUserList() {
+  usersList.innerHTML = "";
+  const userIds = Object.keys(usersMap);
+  userIds.sort((a, b) => (unreadMap[b] || 0) - (unreadMap[a] || 0));
+  userIds.forEach(uid => {
+    const li = document.createElement("li");
+    li.className = "list-group-item user-item d-flex justify-content-between align-items-center";
+    li.dataset.uid = uid;
+    li.textContent = usersMap[uid];
+    li.style.cursor = "pointer";
+    if (unreadMap[uid] > 0) {
+      const badge = document.createElement("span");
+      badge.className = "badge bg-danger rounded-pill ms-2";
+      badge.textContent = unreadMap[uid];
+      li.appendChild(badge);
+    }
+    li.addEventListener("click", () => {
+      selectedUser = uid;
+      loadAdminChat();
+      highlightSelectedUser();
+      markMessagesRead(selectedUser);
+    });
+    usersList.appendChild(li);
+  });
+}
+
+function highlightSelectedUser() {
+  usersList.querySelectorAll("li").forEach(li => {
+    li.classList.toggle("active", li.dataset.uid === selectedUser);
+  });
+}
+
+async function markMessagesRead(uid) {
+  const chatRef = collection(db, "chats");
+  const q = query(chatRef, orderBy("timestamp", "asc"));
+  const snapshot = await getDocs(q);
+  snapshot.forEach(async docSnap => {
+    const data = docSnap.data();
+    if (data.uid === uid && data.to === "agent" && !data.read) {
+      await setDoc(doc(db, "chats", docSnap.id), {...data, read: true});
+      unreadMap[uid] = 0; 
+      updateUserList();
+    }
+  });
+}
+
+function listenUnread() {
+  const chatRef = collection(db, "chats");
+  const q = query(chatRef, orderBy("timestamp", "asc"));
+  onSnapshot(q, snapshot => {
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.to === "agent" && !data.read) {
+        unreadMap[data.uid] = (unreadMap[data.uid] || 0) + 1;
+      }
+    });
+    updateUserList();
+  });
+}
+
+function loadAdminChat() {
+  if (!selectedUser) return;
+  const chatRef = collection(db, "chats");
+  const q = query(chatRef, orderBy("timestamp", "asc"));
+  onSnapshot(q, snapshot => {
+    adminChatBox.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if ((data.uid === selectedUser && data.to === "agent") ||
+          (data.uid === auth.currentUser.uid && data.to === selectedUser)) {
+        const div = document.createElement("div");
+        if (data.uid === auth.currentUser.uid) {
+          div.className = "chat-message admin";
+          div.innerHTML = `<i class="fas fa-user-tie me-1"></i> Admin: ${data.message}`;
+        } else {
+          div.className = "chat-message user";
+          div.innerHTML = `<i class="fas fa-user me-1"></i> ${usersMap[selectedUser]}: ${data.message}`;
+        }
+        adminChatBox.appendChild(div);
+      }
+    });
+    adminChatBox.scrollTop = adminChatBox.scrollHeight;
+  });
+}
+
+async function sendAdminReply() {
+  if (!selectedUser) { alert("Select a user first"); return; }
+  const message = replyInput.value.trim();
+  if (!message) return;
+  await addDoc(collection(db, "chats"), {
+    uid: auth.currentUser.uid,
+    to: selectedUser,
+    message,
+    timestamp: new Date(),
+    read: false
+  });
+  replyInput.value = "";
+}
+
+searchUser.addEventListener("input", () => {
+  const search = searchUser.value.toLowerCase();
+  usersList.querySelectorAll("li").forEach(li => {
+    li.style.display = li.textContent.toLowerCase().includes(search) ? "" : "none";
+  });
+});
+
+replyInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendAdminReply();
+  }
+});
+
+sendReplyBtn.addEventListener("click", sendAdminReply);
+
+loadChatUsers();
+listenUnread();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>

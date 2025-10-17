@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twist & Taste - Cart</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- AOS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+  <style>
+    body { background: #f8f9fa; }
+    .cart-card { margin-top:50px; }
+    .cart-item { display:flex; align-items:flex-start; justify-content:space-between; padding:15px; border-bottom:1px solid #ddd; }
+    .cart-item img { width:60px; height:60px; object-fit:cover; border-radius:10px; }
+    .cart-item-details { flex:1; margin-left:15px; }
+    .extras { font-size: 14px; color:#ffffff; margin-top:5px; }
+    .checkout-box { background:#fff; border-radius:10px; padding:20px; box-shadow:0 4px 12px rgb(249, 249, 249); }
+    .payment-option { border:1px solid #ddd; border-radius:8px; padding:10px; cursor:pointer; margin-bottom:10px; transition:0.2s; }
+    .payment-option:hover { border-color:#0d6efd; background:#f0f8ff; }
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      80% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .cart-item {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:15px;
+  background:#dcd9d9;
+  transition: all 0.3s ease;
+}
+.cart-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgb(252, 252, 252);
+}
+.cart-item img {
+  width:80px; height:80px; object-fit:cover; border-radius:15px;
+}
+.cart-item-details {
+  flex:1; margin-left:15px; color:#fff;
+}
+.cart-item-details strong {
+  display:block; font-size:1.1rem; color:#fdf9f9;
+}
+.qtyControls {
+  display:flex; align-items:center; gap:5px; margin-top:5px;
+}
+.qtyControls button {
+  border:none; background:#f6f5f5; color:#fff; padding:5px 10px; border-radius:8px;
+  cursor:pointer; transition:0.2s;
+}
+.qtyControls button:hover { background:#fefdfd; }
+.qtyControls input { width:50px; text-align:center; border-radius:8px; }
+
+.cart-item .btn-delete {
+  border:none; background:none; color:#fffdfd; font-size:1.3rem; cursor:pointer;
+  transition:0.2s;
+}
+.cart-item .btn-delete:hover { color:#ffffff; transform:scale(1.2); }
+
+
+.payment-option:hover { background:#ffffff; border-color:#ffffff; }
+#cartNavBtn.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">🍔 Twist & Taste</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+     <li class="nav-item">
+  <a id="cartNavBtn" class="nav-link position-relative disabled" href="cart.html">
+    <i class="fas fa-shopping-cart"></i> Cart
+    <span id="cartCount" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">0</span>
+  </a>
+</li>
+
+        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+      <a href="#featured" class="btn btn-danger ms-3">Order Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Cart Section -->
+<section class="container cart-card" data-aos="fade-up">
+  <div class="row">
+    <div class="col-lg-8">
+      <h3 class="mb-4 text-danger">My Cart</h3>
+      <div id="cartItems"></div>
+    </div>
+    <div class="col-lg-4">
+      <div class="checkout-box shadow-lg p-4 rounded-4 bg-dark text-white">
+        <h5 class="mb-3"><i class="fas fa-credit-card"></i> Checkout</h5>
+        <div class="mb-3" id="cartTotal">Total: Rs.0</div>
+
+        <!-- Payment Methods -->
+        <div class="form-check payment-option">
+          <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
+          <label class="form-check-label" for="cod"><i class="fas fa-truck"></i> Cash on Delivery</label>
+        </div>
+        <div class="form-check payment-option">
+          <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card">
+          <label class="form-check-label" for="card"><i class="fas fa-credit-card"></i> Pay with Card</label>
+        </div>
+
+        <!-- Card Payment Form -->
+        <div id="card-payment-form" style="display:none;">
+          <input type="text" class="form-control mb-2" placeholder="Card Number">
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="MM/YY">
+            <input type="password" class="form-control" placeholder="CVV">
+          </div>
+        </div>
+
+        <button class="btn btn-danger w-100 mt-3" id="checkoutBtn">
+          <i class="fas fa-check"></i> Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4" style="border-radius:20px;">
+      <div class="modal-body">
+        <div class="mb-3">
+          <i class="fas fa-check-circle text-success" style="font-size:80px; animation: pop 0.5s ease;"></i>
+        </div>
+        <h3 class="fw-bold text-success">Order Successful!</h3>
+        <p class="mt-2">Your order has been placed successfully 🎉</p>
+        <a href="profile.html" class="btn btn-primary mt-3">
+          <i class="fas fa-user"></i> Go to Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-light text-center py-3 mt-5">
+  <p>© 2025 Twist & Taste. All rights reserved.</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = { 
+  apiKey: "AIzaSyAd899TaOCfg0RhMQjzQ9R5_cwqpXxNduU",
+  authDomain: "twistandtaste.firebaseapp.com",
+  projectId: "twistandtaste",
+  storageBucket: "twistandtaste.appspot.com",
+  messagingSenderId: "88111377756",
+  appId: "1:88111377756:web:067aad85b3e97b44eb6599",
+  measurementId: "G-L190CVJD8J"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const navLinks = document.querySelector(".navbar-nav");
+const cartItemsContainer = document.getElementById("cartItems");
+const cartTotalEl = document.getElementById("cartTotal");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+let userId = null;
+let cart = [];
+let total = 0;
+
+// Load cart items
+async function loadCart() {
+  if(!userId) return;
+  cartItemsContainer.innerHTML = "";
+  cart = [];
+  total = 0;
+
+  const cartSnap = await getDocs(collection(db, "carts", userId, "items"));
+  cartSnap.forEach(docSnap => {
+    const item = docSnap.data();
+    item.id = docSnap.id;
+    cart.push(item);
+
+    const unitPrice = (item.price || 0) + (item.extrasCost || 0);
+    const subtotal = unitPrice * (item.quantity || 1);
+    total += subtotal;
+
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("cart-item");
+    itemDiv.innerHTML = `
+      <img src="${item.imageUrl}" alt="${item.name}">
+      <div class="cart-item-details">
+        <strong>${item.name}</strong><br>
+        Rs.${unitPrice} x 
+        <input type="number" min="1" value="${item.quantity}" style="width:60px;" data-id="${item.id}" class="qtyInput">
+        = Rs.${subtotal}
+        ${item.extras?.length ? `<div class="extras">Extras: ${item.extras.join(", ")}</div>` : ""}
+      </div>
+      <button class="btn btn-sm btn-danger" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+    `;
+    cartItemsContainer.appendChild(itemDiv);
+  });
+
+  cartTotalEl.innerText = `Total: Rs.${total}`;
+  attachCartEvents();
+}
+
+// Attach quantity and remove events
+function attachCartEvents() {
+  document.querySelectorAll(".qtyInput").forEach(input => {
+    input.addEventListener("change", async e => {
+      const id = e.target.dataset.id;
+      const qty = parseInt(e.target.value);
+      if(qty <= 0) return;
+      await setDoc(doc(db, "carts", userId, "items", id), { quantity: qty }, { merge:true });
+      loadCart();
+    });
+  });
+
+  document.querySelectorAll(".btn-danger").forEach(btn => {
+    btn.addEventListener("click", async e => {
+      const id = e.target.closest("button").dataset.id;
+      await deleteDoc(doc(db, "carts", userId, "items", id));
+      loadCart();
+    });
+  });
+}
+
+// Payment toggle
+document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+  radio.addEventListener("change", () => {
+    document.getElementById("card-payment-form").style.display = document.getElementById("card").checked ? "block" : "none";
+  });
+});
+
+// Checkout logic
+checkoutBtn.addEventListener("click", async () => {
+  if(cart.length === 0){ alert("Cart is empty!"); return; }
+  const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+  if(method === "Card"){
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const expiry = document.getElementById("expiry").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    if(!cardNumber || !expiry || !cvv){
+      alert("⚠️ Please enter complete card details.");
+      return;
+    }
+  }
+
+  const orderItems = cart.filter(i => i.quantity > 0).map(i => ({
+    name: i.name,
+    quantity: i.quantity,
+    price: i.price,
+    extras: i.extras || [],
+    subtotal: ((i.price || 0) + (i.extrasCost || 0)) * i.quantity
+  }));
+
+  try {
+    // Save order
+    await addDoc(collection(db, "orders"), {
+      userId,
+      userName: auth.currentUser.displayName || "User",
+      userEmail: auth.currentUser.email || "",
+      items: orderItems,
+      status: "Pending",
+      paymentMethod: method,
+      total,
+      timestamp: new Date()
+    });
+
+    // Clear cart
+    for(const item of cart){
+      await deleteDoc(doc(db, "carts", userId, "items", item.id));
+    }
+
+    loadCart();
+
+    // Show success modal
+    const modal = new bootstrap.Modal(document.getElementById("successModal"));
+    modal.show();
+
+  } catch(err) {
+    console.error("Error placing order:", err);
+    alert("⚠️ Something went wrong. Please try again.");
+  }
+});
+
+// Auth + navbar
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    userId = user.uid;
+
+    navLinks.querySelectorAll('a[href="login.html"], a[href="signup.html"]').forEach(el => el.remove());
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    let displayName = "User";
+    if(userDoc.exists()) displayName = userDoc.data().name || "User";
+
+    navLinks.innerHTML += `
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          👤 ${displayName}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger fw-bold" href="#" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </a></li>
+        </ul>
+      </li>
+    `;
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      location.reload();
+    });
+
+    loadCart();
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+
+// JS to handle cart, quantity, delete, checkout
+function renderCart() {
+  cartItemsContainer.innerHTML = "";
+  total = 0;
+  cart.forEach(item => {
+    const unitPrice = (item.price||0) + (item.extrasCost||0);
+    const subtotal = unitPrice * (item.quantity||1);
+    total += subtotal;
+
+    const div = document.createElement("div");
+    div.classList.add("cart-item");
+    div.innerHTML = `
+      <img src="${item.imageUrl}" alt="${item.name}">
+      <div class="cart-item-details">
+        <strong>${item.name}</strong>
+        Rs.${unitPrice} x 
+        <div class="qtyControls">
+          <button class="decrease" data-id="${item.id}">-</button>
+          <input type="number" min="1" value="${item.quantity}" data-id="${item.id}">
+          <button class="increase" data-id="${item.id}">+</button>
+        </div>
+        = Rs.${subtotal}
+        ${item.extras?.length ? `<div class="extras">Extras: ${item.extras.join(", ")}</div>` : ""}
+      </div>
+      <button class="btn-delete" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+    `;
+    cartItemsContainer.appendChild(div);
+  });
+  cartTotalEl.innerText = `Total: Rs.${total}`;
+
+  // Attach events
+  document.querySelectorAll(".decrease").forEach(btn=>{
+    btn.addEventListener("click", async e=>{
+      const id=e.target.dataset.id;
+      const item=cart.find(i=>i.id===id);
+      if(item.quantity>1){
+        await setDoc(doc(db,"carts",userId,"items",id),{quantity:item.quantity-1},{merge:true});
+        loadCart();
+      }
+    });
+  });
+  document.querySelectorAll(".increase").forEach(btn=>{
+    btn.addEventListener("click", async e=>{
+      const id=e.target.dataset.id;
+      const item=cart.find(i=>i.id===id);
+      await setDoc(doc(db,"carts",userId,"items",id),{quantity:item.quantity+1},{merge:true});
+      loadCart();
+    });
+  });
+  document.querySelectorAll(".btn-delete").forEach(btn=>{
+    btn.addEventListener("click", async e=>{
+      const id=e.target.dataset.id;
+      await deleteDoc(doc(db,"carts",userId,"items",id));
+      loadCart();
+    });
+  });
+}
+
+/**
+ * Update cart count in the navbar
+ */
+export async function updateCartCount() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const cartSnap = await getDocs(collection(db, "carts", user.uid, "items"));
+  const count = cartSnap.size;
+
+  const cartCountEl = document.getElementById("cartCount");
+  const cartNavBtn = document.getElementById("cartNavBtn");
+
+  if (cartCountEl) cartCountEl.innerText = count;
+
+  if (cartNavBtn) {
+    if (count === 0) {
+      cartNavBtn.classList.add("disabled");
+    } else {
+      cartNavBtn.classList.remove("disabled");
+    }
+  }
+}
+
+// Auto update after login
+onAuthStateChanged(auth, (user) => {
+  if (user) updateCartCount();
+});
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script> AOS.init(); </script>
+<iframe src="footer.html" style="width:100%; border:none; height:300px;"></iframe>
+<script type="module" src="cart-utils.js"></script>
+
+
+</body>
+</html>
